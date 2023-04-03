@@ -20,7 +20,7 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
       paint.blendMode = BlendMode.clear;
       paint.strokeWidth = value.eraseStrokeWidth;
     } else {
-      paint.color = Colors.black;
+      paint.color = value.lineColor;
       paint.strokeWidth = value.strokeWidth;
     }
 
@@ -69,8 +69,11 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
   }
 
   /// Change stroke width when dragging
-  void changeStrokeWidth(double strokeWidth) {
-    value = value.copyWith(strokeWidth: strokeWidth);
+  void changeStrokeWidth({double? strokeWidth, FontWeight? fontWeight}) {
+    assert((strokeWidth != null && fontWeight == null) || (strokeWidth == null && fontWeight != null));
+    value = value.copyWith(
+      strokeWidth: strokeWidth ?? FontWeight.values.indexOf(fontWeight!).toDouble() + 1,
+    );
     notifyListeners();
   }
 
@@ -83,6 +86,38 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
   /// Change line color when drawing
   void changeLineColor(Color newColor) {
     value = value.copyWith(lineColor: newColor);
+    notifyListeners();
+  }
+
+  /// Undo the previous drawing
+  void undo() {
+    // Ignore when paths is empty, in other words, there is no path to undo
+    if (value.paths.isEmpty) {
+      return;
+    }
+
+    final tmpPaths = [...value.paths];
+    final tmpRemovedPaths = [...value.removedPaths, tmpPaths.removeLast()];
+    value = value.copyWith(
+      paths: tmpPaths,
+      removedPaths: tmpRemovedPaths,
+    );
+    notifyListeners();
+  }
+
+  /// Redo the removed drawing
+  void redo() {
+    // Ignore when removedPaths is empty, in other words, there is no path to redo
+    if (value.removedPaths.isEmpty) {
+      return;
+    }
+
+    final tmpRemovedPaths = [...value.removedPaths];
+    final tmpPaths = [...value.paths, tmpRemovedPaths.removeLast()];
+    value = value.copyWith(
+      paths: tmpPaths,
+      removedPaths: tmpRemovedPaths,
+    );
     notifyListeners();
   }
 
