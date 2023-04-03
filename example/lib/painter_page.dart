@@ -47,43 +47,7 @@ class _PainterPageState extends State<PainterPage> {
               scrollDirection: Axis.horizontal,
               children: [
                 LineColorSelector(painterController: _painterController),
-                ValueListenableBuilder(
-                  valueListenable: _painterController,
-                  builder: (context, value, child) {
-                    final strokeWidth = value.strokeWidth;
-                    final fontWeight = strokeWidth < 0 || strokeWidth > 9
-                        ? FontWeight.normal
-                        : FontWeight.values[value.strokeWidth.toInt() - 1];
-                    return PopupMenuButton<FontWeight>(
-                      onSelected: (value) => _painterController.changeStrokeWidth(fontWeight: value),
-                      icon: Text(
-                        'A',
-                        style: TextStyle(fontWeight: fontWeight, fontSize: 24),
-                      ),
-                      itemBuilder: (context) {
-                        return FontWeight.values
-                            .map((e) => PopupMenuItem(
-                                value: e,
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'A',
-                                        style: TextStyle(fontWeight: e),
-                                        selectionColor: Colors.orange,
-                                      ),
-                                    ),
-                                    Visibility(
-                                      visible: fontWeight == e,
-                                      child: const Icon(Icons.check_rounded),
-                                    ),
-                                  ],
-                                )))
-                            .toList();
-                      },
-                    );
-                  },
-                ),
+                StrokeWidthSettingButton(painterController: _painterController),
               ],
             ),
           ),
@@ -106,6 +70,57 @@ class _PainterPageState extends State<PainterPage> {
   }
 }
 
+/// Setting button to change stroke width by selecting fontWeight which is converted to strokeWidth in double type
+class StrokeWidthSettingButton extends StatelessWidget {
+  const StrokeWidthSettingButton({
+    super.key,
+    required this.painterController,
+  });
+
+  final PainterController painterController;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: painterController,
+      builder: (context, value, child) {
+        final strokeWidth = value.strokeWidth;
+        final fontWeight =
+            strokeWidth < 0 || strokeWidth > 9 ? FontWeight.normal : FontWeight.values[value.strokeWidth.toInt() - 1];
+        return PopupMenuButton<FontWeight>(
+          onSelected: (value) => painterController.changeStrokeWidth(fontWeight: value),
+          icon: Text(
+            'A',
+            style: TextStyle(fontWeight: fontWeight, fontSize: 24),
+          ),
+          itemBuilder: (context) {
+            return FontWeight.values
+                .map((e) => PopupMenuItem(
+                    value: e,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'A',
+                            style: TextStyle(fontWeight: e),
+                            selectionColor: Colors.orange,
+                          ),
+                        ),
+                        Visibility(
+                          visible: fontWeight == e,
+                          child: const Icon(Icons.check_rounded),
+                        ),
+                      ],
+                    )))
+                .toList();
+          },
+        );
+      },
+    );
+  }
+}
+
+/// Color selector to change the color of lines when drawing
 class LineColorSelector extends StatelessWidget {
   const LineColorSelector({
     super.key,
@@ -150,6 +165,7 @@ class LineColorSelector extends StatelessWidget {
   }
 }
 
+/// Erase button to erase the drew lines
 class EraseButton extends StatelessWidget {
   const EraseButton({
     super.key,
@@ -189,6 +205,7 @@ class EraseButton extends StatelessWidget {
   }
 }
 
+/// Button to redo the previous removed lines
 class RedoButton extends StatelessWidget {
   const RedoButton({
     super.key,
@@ -211,6 +228,7 @@ class RedoButton extends StatelessWidget {
   }
 }
 
+/// Button to undo the current drew line
 class UndoButton extends StatelessWidget {
   const UndoButton({
     super.key,
