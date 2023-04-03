@@ -1,7 +1,13 @@
 import 'package:flutter_painter/flutter_painter_state.dart';
 import 'package:flutter_painter_example/lib.dart';
 
-const colors = [Colors.black, Colors.red, Colors.green, Colors.blue, Colors.yellow];
+const colors = [
+  Colors.black,
+  Colors.red,
+  Colors.green,
+  Colors.blue,
+  Colors.yellow,
+];
 
 class PainterPage extends StatefulWidget {
   const PainterPage({super.key});
