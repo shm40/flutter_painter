@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_painter_example/main_page.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_painter_example/painter_page.dart';
 
 Future<void> main() async {
-  runApp(const ProviderScope(child: FlutterPainterApp()));
+  runApp(const FlutterPainterApp());
 }
 
 class FlutterPainterApp extends StatelessWidget {
@@ -13,7 +12,7 @@ class FlutterPainterApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'Flutter Painter',
-      home: MainPage(),
+      home: PainterPage(),
     );
   }
 }

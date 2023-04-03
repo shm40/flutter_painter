@@ -1,19 +1,20 @@
+import 'package:flutter_painter/flutter_painter_state.dart';
 import 'package:flutter_painter_example/lib.dart';
 
-class MainPage extends ConsumerStatefulWidget {
-  const MainPage({super.key});
+class PainterPage extends StatefulWidget {
+  const PainterPage({super.key});
 
   @override
-  ConsumerState<MainPage> createState() => _MainPageState();
+  State<PainterPage> createState() => _PainterPageState();
 }
 
-class _MainPageState extends ConsumerState<MainPage> {
-  late FlutterPainterController _painterController;
+class _PainterPageState extends State<PainterPage> {
+  late PainterController _painterController;
 
   @override
   void initState() {
     super.initState();
-    _painterController = FlutterPainterController();
+    _painterController = PainterController();
   }
 
   @override
@@ -29,18 +30,15 @@ class _MainPageState extends ConsumerState<MainPage> {
         title: const Text('Flutter Painter'),
         actions: [
           IconButton(
-            onPressed: () {
-              ref.watch(eraseModeProvider.notifier).changeEraseMode();
-              _painterController.changeEraseMode();
-            },
-            icon: Consumer(
-              builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                final eraseMode = ref.watch(eraseModeProvider);
+            onPressed: _painterController.toggleEraseMode,
+            icon: ValueListenableBuilder<FlutterPainterState>(
+              builder: (context, value, child) {
                 return Icon(
                   FontAwesomeIcons.eraser,
-                  color: Colors.white.withOpacity(eraseMode ? 1.0 : 0.38),
+                  color: Colors.white.withOpacity(value.eraseMode ? 1.0 : 0.38),
                 );
               },
+              valueListenable: _painterController,
             ),
           )
         ],
@@ -49,18 +47,9 @@ class _MainPageState extends ConsumerState<MainPage> {
         children: [
           Expanded(
             child: GestureDetector(
-              onPanStart: (details) {
-                _painterController.add(details.localPosition);
-                ref.watch(erasePositionProvider.notifier).updatePosition(details.localPosition);
-              },
-              onPanUpdate: (details) {
-                _painterController.update(details.localPosition);
-                ref.watch(erasePositionProvider.notifier).updatePosition(details.localPosition);
-              },
-              onPanEnd: (details) {
-                _painterController.end();
-                ref.watch(erasePositionProvider.notifier).updatePosition(Offset.zero);
-              },
+              onPanStart: (details) => _painterController.add(details.localPosition),
+              onPanUpdate: (details) => _painterController.update(details.localPosition),
+              onPanEnd: (details) => _painterController.end(),
               child: Stack(
                 children: [
                   SizedBox(
@@ -71,18 +60,20 @@ class _MainPageState extends ConsumerState<MainPage> {
                       willChange: true,
                     ),
                   ),
-                  Consumer(
-                    builder: (context, ref, child) {
+                  ValueListenableBuilder<FlutterPainterState>(
+                    valueListenable: _painterController,
+                    builder: (context, value, child) {
                       // eraseModeではないもしくはerasePositionがOffset.zeroのときはアイコン非表示
-                      if (!ref.watch(eraseModeProvider)) {
+                      if (!(value.eraseMode && value.inDrag)) {
                         return const SizedBox.shrink();
                       }
 
-                      if (ref.watch(erasePositionProvider) == Offset.zero) {
-                        return const SizedBox.shrink();
-                      }
                       return Positioned.fromRect(
-                        rect: Rect.fromCenter(center: ref.watch(erasePositionProvider), width: 48, height: 48),
+                        rect: Rect.fromCenter(
+                          center: value.currentOffset,
+                          width: value.eraseStrokeWidth,
+                          height: value.eraseStrokeWidth,
+                        ),
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
