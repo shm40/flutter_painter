@@ -37,7 +37,7 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
       inDrag: true,
       paths: [
         ...value.paths,
-        MapEntry(Path()..moveTo(startPosition.dx, startPosition.dy), paint),
+        MapEntry(Path()..moveTo(startPosition.dx, startPosition.dy), MapEntry(_currentPainterSize.width, paint)),
       ],
     );
 
@@ -130,18 +130,18 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
   }
 
   double _initialWidth = 0;
-  double _previousWidth = 0;
+  Size _currentPainterSize = Size.zero;
+
+  /// Set the initial canvas width when the device orientation is chagned
+  void onChangedOrientation(Size painterSize) {
+    _currentPainterSize = painterSize;
+  }
 
   /// Draw current stored paths to canvas
   void draw(Canvas canvas, Size size) async {
-    double scale = 1;
-    if (_previousWidth != 0) {
-      print('$_previousWidth→${size.width}');
-      scale = size.width / _initialWidth;
-    } else {
+    if (_initialWidth == 0) {
       _initialWidth = size.width;
     }
-    _previousWidth = size.width;
     // if (bgImage != null) {
     //   // Save layer with canvas size
     //   canvas.saveLayer(Offset.zero & size, Paint());
@@ -154,12 +154,12 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
     //   canvas.restore();
     // }
 
-    canvas.saveLayer(Offset.zero & size, Paint());
-    canvas.scale(scale);
     for (final element in value.paths) {
-      canvas.drawPath(element.key, element.value);
+      canvas.saveLayer(Offset.zero & size, Paint());
+      canvas.scale(size.width / element.value.key);
+      canvas.drawPath(element.key, element.value.value);
+      canvas.restore();
     }
-    canvas.restore();
   }
 
   Future<ui.Image> loadUiImage(String assetPath) async {

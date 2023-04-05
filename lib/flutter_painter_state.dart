@@ -8,8 +8,8 @@ part 'flutter_painter_state.freezed.dart';
 @freezed
 class FlutterPainterState with _$FlutterPainterState {
   const factory FlutterPainterState({
-    @Default(<MapEntry<Path, Paint>>[]) List<MapEntry<Path, Paint>> paths,
-    @Default(<MapEntry<Path, Paint>>[]) List<MapEntry<Path, Paint>> removedPaths,
+    @Default(<MapEntry<Path, MapEntry<double, Paint>>>[]) List<MapEntry<Path, MapEntry<double, Paint>>> paths,
+    @Default(<MapEntry<Path, MapEntry<double, Paint>>>[]) List<MapEntry<Path, MapEntry<double, Paint>>> removedPaths,
     @Default(Offset.zero) Offset currentOffset,
     @Default(false) bool inDrag,
     @Default(false) bool eraseMode,

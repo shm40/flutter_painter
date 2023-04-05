@@ -16,8 +16,9 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$FlutterPainterState {
-  List<MapEntry<Path, Paint>> get paths => throw _privateConstructorUsedError;
-  List<MapEntry<Path, Paint>> get removedPaths =>
+  List<MapEntry<Path, MapEntry<double, Paint>>> get paths =>
+      throw _privateConstructorUsedError;
+  List<MapEntry<Path, MapEntry<double, Paint>>> get removedPaths =>
       throw _privateConstructorUsedError;
   Offset get currentOffset => throw _privateConstructorUsedError;
   bool get inDrag => throw _privateConstructorUsedError;
@@ -40,8 +41,8 @@ abstract class $FlutterPainterStateCopyWith<$Res> {
       _$FlutterPainterStateCopyWithImpl<$Res, FlutterPainterState>;
   @useResult
   $Res call(
-      {List<MapEntry<Path, Paint>> paths,
-      List<MapEntry<Path, Paint>> removedPaths,
+      {List<MapEntry<Path, MapEntry<double, Paint>>> paths,
+      List<MapEntry<Path, MapEntry<double, Paint>>> removedPaths,
       Offset currentOffset,
       bool inDrag,
       bool eraseMode,
@@ -80,11 +81,11 @@ class _$FlutterPainterStateCopyWithImpl<$Res, $Val extends FlutterPainterState>
       paths: null == paths
           ? _value.paths
           : paths // ignore: cast_nullable_to_non_nullable
-              as List<MapEntry<Path, Paint>>,
+              as List<MapEntry<Path, MapEntry<double, Paint>>>,
       removedPaths: null == removedPaths
           ? _value.removedPaths
           : removedPaths // ignore: cast_nullable_to_non_nullable
-              as List<MapEntry<Path, Paint>>,
+              as List<MapEntry<Path, MapEntry<double, Paint>>>,
       currentOffset: null == currentOffset
           ? _value.currentOffset
           : currentOffset // ignore: cast_nullable_to_non_nullable
@@ -130,8 +131,8 @@ abstract class _$$_FlutterPainterStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<MapEntry<Path, Paint>> paths,
-      List<MapEntry<Path, Paint>> removedPaths,
+      {List<MapEntry<Path, MapEntry<double, Paint>>> paths,
+      List<MapEntry<Path, MapEntry<double, Paint>>> removedPaths,
       Offset currentOffset,
       bool inDrag,
       bool eraseMode,
@@ -168,11 +169,11 @@ class __$$_FlutterPainterStateCopyWithImpl<$Res>
       paths: null == paths
           ? _value._paths
           : paths // ignore: cast_nullable_to_non_nullable
-              as List<MapEntry<Path, Paint>>,
+              as List<MapEntry<Path, MapEntry<double, Paint>>>,
       removedPaths: null == removedPaths
           ? _value._removedPaths
           : removedPaths // ignore: cast_nullable_to_non_nullable
-              as List<MapEntry<Path, Paint>>,
+              as List<MapEntry<Path, MapEntry<double, Paint>>>,
       currentOffset: null == currentOffset
           ? _value.currentOffset
           : currentOffset // ignore: cast_nullable_to_non_nullable
@@ -213,10 +214,10 @@ class __$$_FlutterPainterStateCopyWithImpl<$Res>
 
 class _$_FlutterPainterState implements _FlutterPainterState {
   const _$_FlutterPainterState(
-      {final List<MapEntry<Path, Paint>> paths =
-          const <MapEntry<Path, Paint>>[],
-      final List<MapEntry<Path, Paint>> removedPaths =
-          const <MapEntry<Path, Paint>>[],
+      {final List<MapEntry<Path, MapEntry<double, Paint>>> paths =
+          const <MapEntry<Path, MapEntry<double, Paint>>>[],
+      final List<MapEntry<Path, MapEntry<double, Paint>>> removedPaths =
+          const <MapEntry<Path, MapEntry<double, Paint>>>[],
       this.currentOffset = Offset.zero,
       this.inDrag = false,
       this.eraseMode = false,
@@ -228,19 +229,19 @@ class _$_FlutterPainterState implements _FlutterPainterState {
       : _paths = paths,
         _removedPaths = removedPaths;
 
-  final List<MapEntry<Path, Paint>> _paths;
+  final List<MapEntry<Path, MapEntry<double, Paint>>> _paths;
   @override
   @JsonKey()
-  List<MapEntry<Path, Paint>> get paths {
+  List<MapEntry<Path, MapEntry<double, Paint>>> get paths {
     if (_paths is EqualUnmodifiableListView) return _paths;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_paths);
   }
 
-  final List<MapEntry<Path, Paint>> _removedPaths;
+  final List<MapEntry<Path, MapEntry<double, Paint>>> _removedPaths;
   @override
   @JsonKey()
-  List<MapEntry<Path, Paint>> get removedPaths {
+  List<MapEntry<Path, MapEntry<double, Paint>>> get removedPaths {
     if (_removedPaths is EqualUnmodifiableListView) return _removedPaths;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_removedPaths);
@@ -323,8 +324,8 @@ class _$_FlutterPainterState implements _FlutterPainterState {
 
 abstract class _FlutterPainterState implements FlutterPainterState {
   const factory _FlutterPainterState(
-      {final List<MapEntry<Path, Paint>> paths,
-      final List<MapEntry<Path, Paint>> removedPaths,
+      {final List<MapEntry<Path, MapEntry<double, Paint>>> paths,
+      final List<MapEntry<Path, MapEntry<double, Paint>>> removedPaths,
       final Offset currentOffset,
       final bool inDrag,
       final bool eraseMode,
@@ -335,9 +336,9 @@ abstract class _FlutterPainterState implements FlutterPainterState {
       final String? backgroundImageUrl}) = _$_FlutterPainterState;
 
   @override
-  List<MapEntry<Path, Paint>> get paths;
+  List<MapEntry<Path, MapEntry<double, Paint>>> get paths;
   @override
-  List<MapEntry<Path, Paint>> get removedPaths;
+  List<MapEntry<Path, MapEntry<double, Paint>>> get removedPaths;
   @override
   Offset get currentOffset;
   @override

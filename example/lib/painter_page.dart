@@ -30,8 +30,8 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
   @override
   void didChangeMetrics() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final painterBox = painterKey.currentContext?.findRenderObject() as RenderBox;
-      // print(painterBox.size);
+      final painterBox = painterKey.currentContext!.findRenderObject() as RenderBox;
+      _painterController.onChangedOrientation(painterBox.size);
     });
   }
 
