@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -14,5 +16,7 @@ class FlutterPainterState with _$FlutterPainterState {
     @Default(Colors.black) Color lineColor,
     @Default(5.0) double strokeWidth,
     @Default(48.0) double eraseStrokeWidth,
+    File? backgroundImageFile,
+    String? backgroundImageUrl,
   }) = _FlutterPainterState;
 }

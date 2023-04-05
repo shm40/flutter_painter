@@ -25,6 +25,8 @@ mixin _$FlutterPainterState {
   Color get lineColor => throw _privateConstructorUsedError;
   double get strokeWidth => throw _privateConstructorUsedError;
   double get eraseStrokeWidth => throw _privateConstructorUsedError;
+  File? get backgroundImageFile => throw _privateConstructorUsedError;
+  String? get backgroundImageUrl => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $FlutterPainterStateCopyWith<FlutterPainterState> get copyWith =>
@@ -45,7 +47,9 @@ abstract class $FlutterPainterStateCopyWith<$Res> {
       bool eraseMode,
       Color lineColor,
       double strokeWidth,
-      double eraseStrokeWidth});
+      double eraseStrokeWidth,
+      File? backgroundImageFile,
+      String? backgroundImageUrl});
 }
 
 /// @nodoc
@@ -69,6 +73,8 @@ class _$FlutterPainterStateCopyWithImpl<$Res, $Val extends FlutterPainterState>
     Object? lineColor = null,
     Object? strokeWidth = null,
     Object? eraseStrokeWidth = null,
+    Object? backgroundImageFile = freezed,
+    Object? backgroundImageUrl = freezed,
   }) {
     return _then(_value.copyWith(
       paths: null == paths
@@ -103,6 +109,14 @@ class _$FlutterPainterStateCopyWithImpl<$Res, $Val extends FlutterPainterState>
           ? _value.eraseStrokeWidth
           : eraseStrokeWidth // ignore: cast_nullable_to_non_nullable
               as double,
+      backgroundImageFile: freezed == backgroundImageFile
+          ? _value.backgroundImageFile
+          : backgroundImageFile // ignore: cast_nullable_to_non_nullable
+              as File?,
+      backgroundImageUrl: freezed == backgroundImageUrl
+          ? _value.backgroundImageUrl
+          : backgroundImageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -123,7 +137,9 @@ abstract class _$$_FlutterPainterStateCopyWith<$Res>
       bool eraseMode,
       Color lineColor,
       double strokeWidth,
-      double eraseStrokeWidth});
+      double eraseStrokeWidth,
+      File? backgroundImageFile,
+      String? backgroundImageUrl});
 }
 
 /// @nodoc
@@ -145,6 +161,8 @@ class __$$_FlutterPainterStateCopyWithImpl<$Res>
     Object? lineColor = null,
     Object? strokeWidth = null,
     Object? eraseStrokeWidth = null,
+    Object? backgroundImageFile = freezed,
+    Object? backgroundImageUrl = freezed,
   }) {
     return _then(_$_FlutterPainterState(
       paths: null == paths
@@ -179,6 +197,14 @@ class __$$_FlutterPainterStateCopyWithImpl<$Res>
           ? _value.eraseStrokeWidth
           : eraseStrokeWidth // ignore: cast_nullable_to_non_nullable
               as double,
+      backgroundImageFile: freezed == backgroundImageFile
+          ? _value.backgroundImageFile
+          : backgroundImageFile // ignore: cast_nullable_to_non_nullable
+              as File?,
+      backgroundImageUrl: freezed == backgroundImageUrl
+          ? _value.backgroundImageUrl
+          : backgroundImageUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -196,7 +222,9 @@ class _$_FlutterPainterState implements _FlutterPainterState {
       this.eraseMode = false,
       this.lineColor = Colors.black,
       this.strokeWidth = 5.0,
-      this.eraseStrokeWidth = 48.0})
+      this.eraseStrokeWidth = 48.0,
+      this.backgroundImageFile,
+      this.backgroundImageUrl})
       : _paths = paths,
         _removedPaths = removedPaths;
 
@@ -236,10 +264,14 @@ class _$_FlutterPainterState implements _FlutterPainterState {
   @override
   @JsonKey()
   final double eraseStrokeWidth;
+  @override
+  final File? backgroundImageFile;
+  @override
+  final String? backgroundImageUrl;
 
   @override
   String toString() {
-    return 'FlutterPainterState(paths: $paths, removedPaths: $removedPaths, currentOffset: $currentOffset, inDrag: $inDrag, eraseMode: $eraseMode, lineColor: $lineColor, strokeWidth: $strokeWidth, eraseStrokeWidth: $eraseStrokeWidth)';
+    return 'FlutterPainterState(paths: $paths, removedPaths: $removedPaths, currentOffset: $currentOffset, inDrag: $inDrag, eraseMode: $eraseMode, lineColor: $lineColor, strokeWidth: $strokeWidth, eraseStrokeWidth: $eraseStrokeWidth, backgroundImageFile: $backgroundImageFile, backgroundImageUrl: $backgroundImageUrl)';
   }
 
   @override
@@ -260,7 +292,11 @@ class _$_FlutterPainterState implements _FlutterPainterState {
             (identical(other.strokeWidth, strokeWidth) ||
                 other.strokeWidth == strokeWidth) &&
             (identical(other.eraseStrokeWidth, eraseStrokeWidth) ||
-                other.eraseStrokeWidth == eraseStrokeWidth));
+                other.eraseStrokeWidth == eraseStrokeWidth) &&
+            (identical(other.backgroundImageFile, backgroundImageFile) ||
+                other.backgroundImageFile == backgroundImageFile) &&
+            (identical(other.backgroundImageUrl, backgroundImageUrl) ||
+                other.backgroundImageUrl == backgroundImageUrl));
   }
 
   @override
@@ -273,7 +309,9 @@ class _$_FlutterPainterState implements _FlutterPainterState {
       eraseMode,
       lineColor,
       strokeWidth,
-      eraseStrokeWidth);
+      eraseStrokeWidth,
+      backgroundImageFile,
+      backgroundImageUrl);
 
   @JsonKey(ignore: true)
   @override
@@ -292,7 +330,9 @@ abstract class _FlutterPainterState implements FlutterPainterState {
       final bool eraseMode,
       final Color lineColor,
       final double strokeWidth,
-      final double eraseStrokeWidth}) = _$_FlutterPainterState;
+      final double eraseStrokeWidth,
+      final File? backgroundImageFile,
+      final String? backgroundImageUrl}) = _$_FlutterPainterState;
 
   @override
   List<MapEntry<Path, Paint>> get paths;
@@ -310,6 +350,10 @@ abstract class _FlutterPainterState implements FlutterPainterState {
   double get strokeWidth;
   @override
   double get eraseStrokeWidth;
+  @override
+  File? get backgroundImageFile;
+  @override
+  String? get backgroundImageUrl;
   @override
   @JsonKey(ignore: true)
   _$$_FlutterPainterStateCopyWith<_$_FlutterPainterState> get copyWith =>
