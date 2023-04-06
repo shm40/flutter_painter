@@ -22,7 +22,7 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
 
     // If the current mode is erasing, set the erase setting to paint
     if (value.eraseMode) {
-      paint.color = Colors.transparent;
+      paint.color = Colors.white;
       paint.blendMode = BlendMode.clear;
       paint.strokeWidth = value.eraseStrokeWidth;
     } else {
@@ -154,12 +154,14 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
     //   canvas.restore();
     // }
 
+    canvas.saveLayer(Offset.zero & size, Paint());
     for (final element in value.paths) {
-      canvas.saveLayer(Offset.zero & size, Paint());
+      canvas.save();
       canvas.scale(size.width / element.value.key);
       canvas.drawPath(element.key, element.value.value);
       canvas.restore();
     }
+    canvas.restore();
   }
 
   Future<ui.Image> loadUiImage(String assetPath) async {

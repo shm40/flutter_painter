@@ -224,7 +224,11 @@ class PainterWidget extends StatelessWidget {
             child: CustomPaint(
               foregroundPainter: FlutterPainter(painterController, repaint: painterController),
               willChange: true,
-              child: Container(color: Colors.grey.shade200),
+              child: Container(
+                color: Colors.grey.shade100,
+                // width: double.infinity,
+                // height: double.infinity,
+              ),
             ),
           );
         }
