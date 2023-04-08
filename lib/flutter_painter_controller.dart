@@ -170,22 +170,24 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
     canvas.saveLayer(Offset.zero & size, Paint());
     for (final element in value.paths) {
       canvas.save();
+
+      // Scale the canvas to handle the device orientation change
+      final scale = size.width / element.value.key;
       canvas.scale(size.width / element.value.key);
 
-      if (_initialPainterWidth != element.value.key) {
-        // キャンバスの幅が変更されたときは線の幅を合わせる
-        final paint = Paint()
-          ..color = element.value.value.color
-          ..strokeWidth = element.value.value.strokeWidth
-          ..strokeCap = element.value.value.strokeCap
-          ..strokeJoin = element.value.value.strokeJoin
-          ..blendMode = element.value.value.blendMode
-          ..style = PaintingStyle.stroke;
-        paint.strokeWidth = paint.strokeWidth * _strokeWidthScaleFactor;
-        canvas.drawPath(element.key, paint);
-      } else {
-        canvas.drawPath(element.key, element.value.value);
-      }
+      final paint = Paint()
+        ..color = element.value.value.color
+        ..strokeWidth = element.value.value.strokeWidth
+        ..strokeCap = element.value.value.strokeCap
+        ..strokeJoin = element.value.value.strokeJoin
+        ..blendMode = element.value.value.blendMode
+        ..style = PaintingStyle.stroke;
+
+      // Multiply paint stroke width by the ratio of the width which the path was drawn and the current painter width
+      // This is the reciprocal of scale factor applied to canvas
+      paint.strokeWidth = paint.strokeWidth * (1 / scale);
+      canvas.drawPath(element.key, paint);
+
       canvas.restore();
     }
     canvas.restore();
@@ -215,5 +217,25 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
       backgroundImageUrl: imageUrl,
     );
     notifyListeners();
+  }
+
+  /// Convert canvas to ByteData as png format
+  Future<ByteData> saveCanvasAsPngImage() async {
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+
+    const double scale = 4;
+
+    canvas.scale(scale);
+    canvas.drawRect(Offset.zero & _currentPainterSize, Paint()..color = Colors.white);
+    draw(canvas, _currentPainterSize);
+
+    final picture = recorder.endRecording();
+    final image = await picture.toImage(
+      (_currentPainterSize.width * scale).toInt(),
+      (_currentPainterSize.height * scale).toInt(),
+    );
+    final pngBytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    return pngBytes!;
   }
 }

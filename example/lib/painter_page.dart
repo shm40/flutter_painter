@@ -54,7 +54,28 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
             },
           ),
           IconButton(
-            onPressed: () async {},
+            onPressed: () async {
+              final data = await _painterController.saveCanvasAsPngImage();
+
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return Scaffold(
+                      backgroundColor: Colors.white,
+                      appBar: AppBar(title: const Text('Image')),
+                      body: Container(
+                        alignment: Alignment.center,
+                        color: Colors.grey,
+                        child: Image.memory(
+                          data.buffer.asUint8List(),
+                        ),
+                      ),
+                    );
+                  },
+                  fullscreenDialog: true,
+                ),
+              );
+            },
             icon: const Icon(Icons.download_rounded),
           ),
           UndoButton(painterController: _painterController),
@@ -96,7 +117,7 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
                       child: PainterWidget(
                         key: painterKey,
                         painterController: _painterController,
-                        aspectRatio: 210 / 297,
+                        aspectRatio: 3 / 1.2,
                       ),
                     ),
                   ),
