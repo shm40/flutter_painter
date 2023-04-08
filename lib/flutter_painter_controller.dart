@@ -10,6 +10,19 @@ import 'package:flutter_painter/flutter_painter_state.dart';
 class PainterController extends ValueNotifier<FlutterPainterState> {
   PainterController() : super(const FlutterPainterState());
 
+  /// Inisital witdh of painter widget
+  double _initialPainterWidth = 0;
+
+  /// Current painter size which is initialized
+  /// when painter is rendered and reinitialized when background image is set
+  Size _currentPainterSize = Size.zero;
+
+  /// Scale factor of stroke width
+  /// which is used when drawing path after the device orientation changed.
+  ///
+  /// This value is changed the current painter size is different from the initial painter width
+  double _strokeWidthScaleFactor = 1.0;
+
   /// Add start positin when dragging start
   void add(Offset startPosition) {
     // Ignore to add path in current path histories if in drag
@@ -129,18 +142,18 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
     notifyListeners();
   }
 
-  double _initialWidth = 0;
-  Size _currentPainterSize = Size.zero;
-
   /// Set the initial canvas width when the device orientation is chagned
   void onChangedOrientation(Size painterSize) {
     _currentPainterSize = painterSize;
+    _strokeWidthScaleFactor = _currentPainterSize.width / _initialPainterWidth;
   }
 
   /// Draw current stored paths to canvas
   void draw(Canvas canvas, Size size) async {
-    if (_initialWidth == 0) {
-      _initialWidth = size.width;
+    if (_initialPainterWidth == 0) {
+      // `_initialPainterWidth` is zero meaning that the `draw` method has just been called for the first time.
+      _initialPainterWidth = size.width;
+      _currentPainterSize = size;
     }
     // if (bgImage != null) {
     //   // Save layer with canvas size
@@ -158,7 +171,21 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
     for (final element in value.paths) {
       canvas.save();
       canvas.scale(size.width / element.value.key);
-      canvas.drawPath(element.key, element.value.value);
+
+      if (_initialPainterWidth != element.value.key) {
+        // キャンバスの幅が変更されたときは線の幅を合わせる
+        final paint = Paint()
+          ..color = element.value.value.color
+          ..strokeWidth = element.value.value.strokeWidth
+          ..strokeCap = element.value.value.strokeCap
+          ..strokeJoin = element.value.value.strokeJoin
+          ..blendMode = element.value.value.blendMode
+          ..style = PaintingStyle.stroke;
+        paint.strokeWidth = paint.strokeWidth * _strokeWidthScaleFactor;
+        canvas.drawPath(element.key, paint);
+      } else {
+        canvas.drawPath(element.key, element.value.value);
+      }
       canvas.restore();
     }
     canvas.restore();
@@ -175,6 +202,12 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
   /// Set background image from file or network image url
   void setBackgroundImage({File? file, String? imageUrl}) {
     assert((file == null && imageUrl == null) || (file != null && imageUrl == null));
+
+    // Reset when background image is set or reset
+    _initialPainterWidth = 0;
+    _currentPainterSize = Size.zero;
+    _strokeWidthScaleFactor = 1.0;
+
     value = value.copyWith(
       paths: [],
       removedPaths: [],

@@ -199,13 +199,11 @@ class PainterWidget extends StatelessWidget {
   const PainterWidget({
     super.key,
     required this.painterController,
-    this.width = double.infinity,
-    this.height = double.infinity,
+    required this.aspectRatio,
   });
 
   final PainterController painterController;
-  final double width;
-  final double height;
+  final double aspectRatio;
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +218,7 @@ class PainterWidget extends StatelessWidget {
                 : Image.network(value.backgroundImageUrl!);
         if (isBackgroundEmpty) {
           return AspectRatio(
-            aspectRatio: 210 / 297, // This is A4 size
+            aspectRatio: aspectRatio,
             child: CustomPaint(
               foregroundPainter: FlutterPainter(painterController, repaint: painterController),
               willChange: true,
@@ -321,6 +319,11 @@ class _SelectedIconState extends State<SelectedIcon> with WidgetsBindingObserver
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        _calculateOffset();
+      });
+    });
   }
 
   @override
@@ -346,14 +349,8 @@ class _SelectedIconState extends State<SelectedIcon> with WidgetsBindingObserver
     final painterBox = widget.painterKey.currentContext!.findRenderObject() as RenderBox;
     painterGlobalOffset = painterBox.localToGlobal(Offset.zero);
 
-    // diffOffsetInPainterAndStack = painterGlobalOffset - parentGlobalOffset;
     diffOffsetInPainterAndStack = painterGlobalOffset - parentGlobalOffset;
-
-    print(parentBox.size);
-    print(painterBox.size);
-
-    // _offset += diffOffsetInPainterAndStack;
-    // _offset += diffOffsetInPainterAndStack;
+    _offset += diffOffsetInPainterAndStack;
   }
 
   @override

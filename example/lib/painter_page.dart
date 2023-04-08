@@ -12,7 +12,6 @@ class PainterPage extends StatefulWidget {
 
 class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
   late PainterController _painterController;
-  Size _painterSize = Size.infinite;
 
   @override
   void initState() {
@@ -30,16 +29,15 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
 
   @override
   void didChangeMetrics() {
-    // Reset painter size to infinity when the device is rotated,
-    // because without this setting, the painter's size after device rotation is calculated from the stack size
-    _painterSize = Size.infinite;
+    super.didChangeMetrics();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final painterBox = painterKey.currentContext!.findRenderObject() as RenderBox;
-      _painterController.onChangedOrientation(painterBox.size);
-      setState(() {
-        _painterSize = painterBox.size;
-      });
+      _calculatePainterSize();
     });
+  }
+
+  void _calculatePainterSize() {
+    final painterBox = painterKey.currentContext!.findRenderObject() as RenderBox;
+    _painterController.onChangedOrientation(painterBox.size);
   }
 
   final painterKey = GlobalKey();
@@ -81,43 +79,39 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
               ),
             ),
             Expanded(
-              child: Center(
-                child: SizedBox.fromSize(
-                  size: _painterSize,
-                  child: Stack(
-                    key: stackKey,
-                    children: [
-                      GestureDetector(
-                        onPanStart: (details) {
-                          final box = painterKey.currentContext!.findRenderObject() as RenderBox;
-                          _painterController.add(box.globalToLocal(details.globalPosition));
-                        },
-                        onPanUpdate: (details) {
-                          final box = painterKey.currentContext!.findRenderObject() as RenderBox;
-                          _painterController.update(box.globalToLocal(details.globalPosition));
-                        },
-                        onPanEnd: (details) => _painterController.end(),
-                        child: Center(
-                          child: PainterWidget(
-                            key: painterKey,
-                            painterController: _painterController,
-                          ),
-                        ),
-                      ),
-                      SelectedIcon(
+              child: Stack(
+                key: stackKey,
+                children: [
+                  GestureDetector(
+                    onPanStart: (details) {
+                      final box = painterKey.currentContext!.findRenderObject() as RenderBox;
+                      _painterController.add(box.globalToLocal(details.globalPosition));
+                    },
+                    onPanUpdate: (details) {
+                      final box = painterKey.currentContext!.findRenderObject() as RenderBox;
+                      _painterController.update(box.globalToLocal(details.globalPosition));
+                    },
+                    onPanEnd: (details) => _painterController.end(),
+                    child: Center(
+                      child: PainterWidget(
+                        key: painterKey,
                         painterController: _painterController,
-                        painterKey: painterKey,
-                        stackKey: stackKey,
-                        icon: Icons.drive_eta_rounded,
+                        aspectRatio: 210 / 297,
                       ),
-                      ErasingIcon(
-                        painterController: _painterController,
-                        painterKey: painterKey,
-                        stackKey: stackKey,
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  // SelectedIcon(
+                  //   painterController: _painterController,
+                  //   painterKey: painterKey,
+                  //   stackKey: stackKey,
+                  //   icon: Icons.drive_eta_rounded,
+                  // ),
+                  ErasingIcon(
+                    painterController: _painterController,
+                    painterKey: painterKey,
+                    stackKey: stackKey,
+                  ),
+                ],
               ),
             ),
           ],
