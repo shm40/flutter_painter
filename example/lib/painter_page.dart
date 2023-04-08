@@ -12,6 +12,7 @@ class PainterPage extends StatefulWidget {
 
 class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
   late PainterController _painterController;
+  Size _painterSize = Size.infinite;
 
   @override
   void initState() {
@@ -29,9 +30,15 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
 
   @override
   void didChangeMetrics() {
+    // Reset painter size to infinity when the device is rotated,
+    // because without this setting, the painter's size after device rotation is calculated from the stack size
+    _painterSize = Size.infinite;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final painterBox = painterKey.currentContext!.findRenderObject() as RenderBox;
       _painterController.onChangedOrientation(painterBox.size);
+      setState(() {
+        _painterSize = painterBox.size;
+      });
     });
   }
 
@@ -74,32 +81,42 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
               ),
             ),
             Expanded(
-              child: GestureDetector(
-                onPanStart: (details) {
-                  final box = painterKey.currentContext!.findRenderObject() as RenderBox;
-                  _painterController.add(box.globalToLocal(details.globalPosition));
-                },
-                onPanUpdate: (details) {
-                  final box = painterKey.currentContext!.findRenderObject() as RenderBox;
-                  _painterController.update(box.globalToLocal(details.globalPosition));
-                },
-                onPanEnd: (details) => _painterController.end(),
-                child: Stack(
-                  key: stackKey,
-                  alignment: Alignment.center,
-                  children: [
-                    Center(
-                      child: PainterWidget(
-                        key: painterKey,
-                        painterController: _painterController,
+              child: Center(
+                child: SizedBox.fromSize(
+                  size: _painterSize,
+                  child: Stack(
+                    key: stackKey,
+                    children: [
+                      GestureDetector(
+                        onPanStart: (details) {
+                          final box = painterKey.currentContext!.findRenderObject() as RenderBox;
+                          _painterController.add(box.globalToLocal(details.globalPosition));
+                        },
+                        onPanUpdate: (details) {
+                          final box = painterKey.currentContext!.findRenderObject() as RenderBox;
+                          _painterController.update(box.globalToLocal(details.globalPosition));
+                        },
+                        onPanEnd: (details) => _painterController.end(),
+                        child: Center(
+                          child: PainterWidget(
+                            key: painterKey,
+                            painterController: _painterController,
+                          ),
+                        ),
                       ),
-                    ),
-                    ErasingIcon(
-                      painterController: _painterController,
-                      painterKey: painterKey,
-                      stackKey: stackKey,
-                    )
-                  ],
+                      SelectedIcon(
+                        painterController: _painterController,
+                        painterKey: painterKey,
+                        stackKey: stackKey,
+                        icon: Icons.drive_eta_rounded,
+                      ),
+                      ErasingIcon(
+                        painterController: _painterController,
+                        painterKey: painterKey,
+                        stackKey: stackKey,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

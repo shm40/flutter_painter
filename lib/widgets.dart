@@ -224,11 +224,7 @@ class PainterWidget extends StatelessWidget {
             child: CustomPaint(
               foregroundPainter: FlutterPainter(painterController, repaint: painterController),
               willChange: true,
-              child: Container(
-                color: Colors.grey.shade100,
-                // width: double.infinity,
-                // height: double.infinity,
-              ),
+              child: Container(color: Colors.white),
             ),
           );
         }
@@ -288,6 +284,136 @@ class ErasingIcon extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+/// Selected icon which can be dragglable until fixed
+class SelectedIcon extends StatefulWidget {
+  const SelectedIcon({
+    super.key,
+    required this.painterController,
+    required this.painterKey,
+    required this.stackKey,
+    required this.icon,
+  });
+
+  final PainterController painterController;
+  final GlobalKey painterKey;
+  final GlobalKey stackKey;
+  final IconData icon;
+
+  @override
+  State<SelectedIcon> createState() => _SelectedIconState();
+}
+
+class _SelectedIconState extends State<SelectedIcon> with WidgetsBindingObserver {
+  Offset _offset = const Offset(100, 100);
+  Offset _dragStartOffset = Offset.zero;
+  double _scale = 1;
+  Offset parentGlobalOffset = Offset.zero;
+  Offset painterGlobalOffset = Offset.zero;
+  Offset diffOffsetInPainterAndStack = Offset.zero;
+
+  Offset _scalerDragStartOffset = Offset.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    setState(() {
+      _calculateOffset();
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  void _calculateOffset() {
+    // Painter offset from parent stack widget
+    final parentBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
+    parentGlobalOffset = parentBox.localToGlobal(Offset.zero);
+
+    // Painter box
+    final painterBox = widget.painterKey.currentContext!.findRenderObject() as RenderBox;
+    painterGlobalOffset = painterBox.localToGlobal(Offset.zero);
+
+    // diffOffsetInPainterAndStack = painterGlobalOffset - parentGlobalOffset;
+    diffOffsetInPainterAndStack = painterGlobalOffset - parentGlobalOffset;
+
+    print(parentBox.size);
+    print(painterBox.size);
+
+    // _offset += diffOffsetInPainterAndStack;
+    // _offset += diffOffsetInPainterAndStack;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned.fromRect(
+          rect: Rect.fromCenter(center: _offset, width: 72 * _scale, height: 72 * _scale),
+          child: GestureDetector(
+            onScaleStart: (details) {
+              final stackBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
+              _dragStartOffset = stackBox.globalToLocal(details.focalPoint) - _offset;
+            },
+            onScaleUpdate: (details) {
+              final stackBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
+              setState(() {
+                _offset = stackBox.globalToLocal(details.focalPoint) - _dragStartOffset;
+              });
+            },
+            onScaleEnd: (details) {
+              _dragStartOffset = Offset.zero;
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Colors.blue,
+                  strokeAlign: BorderSide.strokeAlignOutside,
+                ),
+              ),
+              child: Icon(
+                widget.icon,
+                size: 72 * _scale,
+              ),
+            ),
+          ),
+        ),
+        Positioned.fromRect(
+          rect:
+              Rect.fromCenter(center: (_offset + Offset((72 * _scale) / 2, (72 * _scale) / 2)), width: 24, height: 24),
+          child: GestureDetector(
+            onScaleStart: (details) {
+              final stackBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
+              _scalerDragStartOffset = stackBox.globalToLocal(details.focalPoint);
+            },
+            onScaleUpdate: (details) {
+              final stackBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
+              final currentOffset = stackBox.globalToLocal(details.focalPoint);
+              setState(() {
+                _scale = (36 + (currentOffset.dx - _scalerDragStartOffset.dx)) / 36;
+              });
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
