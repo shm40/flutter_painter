@@ -594,14 +594,14 @@ class ColorPickerButton extends StatelessWidget {
           child: Center(
             child: Container(
               margin: const EdgeInsets.only(right: 16),
-              width: 40,
-              height: 40,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 color: value.eraseMode ? value.lineColor : null,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: value.lineColor, width: 4),
               ),
-              padding: value.eraseMode ? null : const EdgeInsets.all(4),
+              padding: value.eraseMode ? null : const EdgeInsets.all(3.2),
               child: value.eraseMode
                   ? null
                   : Container(
