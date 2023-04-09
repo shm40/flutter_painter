@@ -6,6 +6,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_painter/flutter_painter_state.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 class PainterController extends ValueNotifier<FlutterPainterState> {
   PainterController() : super(const FlutterPainterState());
@@ -16,12 +18,6 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
   /// Current painter size which is initialized
   /// when painter is rendered and reinitialized when background image is set
   Size _currentPainterSize = Size.zero;
-
-  /// Scale factor of stroke width
-  /// which is used when drawing path after the device orientation changed.
-  ///
-  /// This value is changed the current painter size is different from the initial painter width
-  double _strokeWidthScaleFactor = 1.0;
 
   /// Add start positin when dragging start
   void add(Offset startPosition) {
@@ -145,7 +141,6 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
   /// Set the initial canvas width when the device orientation is chagned
   void onChangedOrientation(Size painterSize) {
     _currentPainterSize = painterSize;
-    _strokeWidthScaleFactor = _currentPainterSize.width / _initialPainterWidth;
   }
 
   /// Draw current stored paths to canvas
@@ -155,17 +150,6 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
       _initialPainterWidth = size.width;
       _currentPainterSize = size;
     }
-    // if (bgImage != null) {
-    //   // Save layer with canvas size
-    //   canvas.saveLayer(Offset.zero & size, Paint());
-
-    //   // Get image aspect ratio and calculate how scaled the canvas should be by image size and canvas size
-    //   final imageAspectRatio = bgImage!.width / bgImage!.height;
-    //   final double scale = imageAspectRatio > 1.0 ? size.width / bgImage!.width : size.height / bgImage!.height;
-    //   canvas.scale(scale);
-    //   canvas.drawImage(bgImage!, Offset.zero, Paint());
-    //   canvas.restore();
-    // }
 
     canvas.saveLayer(Offset.zero & size, Paint());
     for (final element in value.paths) {
@@ -193,22 +177,34 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
     canvas.restore();
   }
 
-  Future<ui.Image> loadUiImage(String assetPath) async {
-    final data = await rootBundle.load(assetPath);
-    final list = Uint8List.view(data.buffer);
-    final completer = Completer<ui.Image>();
-    ui.decodeImageFromList(list, completer.complete);
-    return completer.future;
+  Future<ui.Image> loadUiImage({String? assetPath, String? networkImagUrl, File? imageFile}) async {
+    assert((assetPath != null && networkImagUrl == null && imageFile == null) ||
+        (assetPath == null && networkImagUrl != null && imageFile == null) ||
+        (assetPath == null && networkImagUrl == null && imageFile != null));
+    if (assetPath != null) {
+      final data = await rootBundle.load(assetPath);
+      final list = Uint8List.view(data.buffer);
+      final completer = Completer<ui.Image>();
+      ui.decodeImageFromList(list, completer.complete);
+      return completer.future;
+    }
+
+    if (networkImagUrl != null) {
+      final response = await http.get(Uri.parse(networkImagUrl));
+      final bytes = response.bodyBytes;
+      return await decodeImageFromList(bytes);
+    }
+
+    return decodeImageFromList(imageFile!.readAsBytesSync());
   }
 
   /// Set background image from file or network image url
   void setBackgroundImage({File? file, String? imageUrl}) {
-    assert((file == null && imageUrl == null) || (file != null && imageUrl == null));
+    assert((file != null && imageUrl == null) || (file == null && imageUrl != null));
 
     // Reset when background image is set or reset
     _initialPainterWidth = 0;
     _currentPainterSize = Size.zero;
-    _strokeWidthScaleFactor = 1.0;
 
     value = value.copyWith(
       paths: [],
@@ -220,14 +216,25 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
   }
 
   /// Convert canvas to ByteData as png format
-  Future<ByteData> saveCanvasAsPngImage() async {
+  ///
+  /// T is return type, ByteData or File
+  Future<T> saveCanvas<T>() async {
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder);
 
-    const double scale = 4;
+    final double scale = ui.window.devicePixelRatio * 2;
 
     canvas.scale(scale);
     canvas.drawRect(Offset.zero & _currentPainterSize, Paint()..color = Colors.white);
+    if (value.backgroundImageFile != null || value.backgroundImageUrl != null) {
+      final uiImage = await loadUiImage(imageFile: value.backgroundImageFile, networkImagUrl: value.backgroundImageUrl);
+      canvas.drawImageRect(
+        uiImage,
+        Offset.zero & Size(uiImage.width.toDouble(), uiImage.height.toDouble()),
+        Offset.zero & _currentPainterSize,
+        Paint(),
+      );
+    }
     draw(canvas, _currentPainterSize);
 
     final picture = recorder.endRecording();
@@ -236,6 +243,18 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
       (_currentPainterSize.height * scale).toInt(),
     );
     final pngBytes = await image.toByteData(format: ui.ImageByteFormat.png);
-    return pngBytes!;
+
+    if (T == ByteData) {
+      return pngBytes! as T;
+    }
+
+    if (T == File) {
+      final dir = await getTemporaryDirectory();
+      final file = File('${dir.path}/${DateTime.now().millisecondsSinceEpoch}.png');
+      file.writeAsBytesSync(pngBytes!.buffer.asUint8List());
+      return file as T;
+    }
+
+    throw Exception('Unsupported T: $T');
   }
 }

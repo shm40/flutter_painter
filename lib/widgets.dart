@@ -194,9 +194,80 @@ class UndoButton extends StatelessWidget {
   }
 }
 
+/// Drawable widget that incorporating painter widget and erasing icon
+class FlutterPainterWidget extends StatefulWidget {
+  const FlutterPainterWidget({super.key, required this.painterController});
+  final PainterController painterController;
+
+  @override
+  State<FlutterPainterWidget> createState() => _FlutterPainterWidgetState();
+}
+
+class _FlutterPainterWidgetState extends State<FlutterPainterWidget> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _calculatePainterSize();
+    });
+  }
+
+  void _calculatePainterSize() {
+    final painterBox = painterKey.currentContext!.findRenderObject() as RenderBox;
+    widget.painterController.onChangedOrientation(painterBox.size);
+  }
+
+  final painterKey = GlobalKey();
+  final stackKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      key: stackKey,
+      children: [
+        GestureDetector(
+          onPanStart: (details) {
+            final box = painterKey.currentContext!.findRenderObject() as RenderBox;
+            widget.painterController.add(box.globalToLocal(details.globalPosition));
+          },
+          onPanUpdate: (details) {
+            final box = painterKey.currentContext!.findRenderObject() as RenderBox;
+            widget.painterController.update(box.globalToLocal(details.globalPosition));
+          },
+          onPanEnd: (details) => widget.painterController.end(),
+          child: Center(
+            child: SimplePainterWidget(
+              key: painterKey,
+              painterController: widget.painterController,
+              aspectRatio: 3 / 1.2,
+            ),
+          ),
+        ),
+        ErasingIcon(
+          painterController: widget.painterController,
+          painterKey: painterKey,
+          stackKey: stackKey,
+        ),
+      ],
+    );
+  }
+}
+
 /// Custom paint widget
-class PainterWidget extends StatelessWidget {
-  const PainterWidget({
+class SimplePainterWidget extends StatelessWidget {
+  const SimplePainterWidget({
     super.key,
     required this.painterController,
     required this.aspectRatio,
