@@ -552,7 +552,7 @@ class ImagePickerButton extends StatelessWidget {
           onError?.call(error);
         }
       },
-      icon: const Icon(Icons.image_rounded),
+      icon: const Icon(Icons.photo_library_rounded),
     );
   }
 }
