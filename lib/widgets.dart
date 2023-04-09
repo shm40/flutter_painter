@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/flutter_painter_config.dart';
 import 'package:flutter_painter/flutter_painter_controller.dart';
@@ -537,6 +538,57 @@ class ImagePickerButton extends StatelessWidget {
         onSelected(xFile);
       },
       icon: const Icon(Icons.image_rounded),
+    );
+  }
+}
+
+/// Color picker button
+class ColorPickerButton extends StatelessWidget {
+  const ColorPickerButton({super.key, required this.painterController});
+  final PainterController painterController;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<FlutterPainterState>(
+      valueListenable: painterController,
+      builder: (context, value, child) {
+        return GestureDetector(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (_) => AlertDialog(
+                titlePadding: const EdgeInsets.all(0.0),
+                contentPadding: const EdgeInsets.all(0.0),
+                content: SingleChildScrollView(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: ColorPicker(
+                      pickerColor: value.lineColor,
+                      onColorChanged: painterController.changeLineColor,
+                      colorPickerWidth: 300.0,
+                      pickerAreaHeightPercent: 0.7,
+                      enableAlpha: true,
+                      displayThumbColor: true,
+                      paletteType: PaletteType.hsv,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+          child: Center(
+            child: Container(
+              margin: const EdgeInsets.only(right: 16),
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                color: value.lineColor,
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
