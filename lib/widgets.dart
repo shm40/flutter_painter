@@ -115,8 +115,8 @@ class EraseButton extends StatelessWidget {
   const EraseButton({
     super.key,
     required this.painterController,
-    this.iconColor = Colors.white,
     this.size = 40,
+    required this.iconColor,
   });
 
   final PainterController painterController;
@@ -594,12 +594,22 @@ class ColorPickerButton extends StatelessWidget {
           child: Center(
             child: Container(
               margin: const EdgeInsets.only(right: 16),
-              width: 32,
-              height: 32,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: value.lineColor,
-                borderRadius: BorderRadius.circular(16),
+                color: value.eraseMode ? value.lineColor : null,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: value.lineColor, width: 4),
               ),
+              padding: value.eraseMode ? null : const EdgeInsets.all(4),
+              child: value.eraseMode
+                  ? null
+                  : Container(
+                      decoration: BoxDecoration(
+                        color: value.lineColor,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
             ),
           ),
         );

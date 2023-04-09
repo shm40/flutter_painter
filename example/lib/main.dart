@@ -10,9 +10,12 @@ class FlutterPainterApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Flutter Painter',
-      home: PainterPage(),
+      home: const PainterPage(),
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+      ),
     );
   }
 }

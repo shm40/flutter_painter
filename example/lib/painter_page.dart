@@ -46,7 +46,11 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
           ShowSavedImageButton(painterController: _painterController),
           UndoButton(painterController: _painterController),
           RedoButton(painterController: _painterController),
-          EraseButton(painterController: _painterController),
+          EraseButton(
+            painterController: _painterController,
+            iconColor: Colors.white,
+          ),
+          ColorPickerButton(painterController: _painterController),
         ],
       ),
       body: SafeArea(
