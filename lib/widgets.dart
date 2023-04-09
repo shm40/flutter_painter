@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
+import 'package:flutter_painter/flutter_painter_config.dart';
 import 'package:flutter_painter/flutter_painter_controller.dart';
 import 'package:flutter_painter/flutter_painter_state.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -196,8 +197,9 @@ class UndoButton extends StatelessWidget {
 
 /// Drawable widget that incorporating painter widget and erasing icon
 class FlutterPainterWidget extends StatefulWidget {
-  const FlutterPainterWidget({super.key, required this.painterController});
+  const FlutterPainterWidget({super.key, required this.painterController, this.config = const FlutterPainterConfig()});
   final PainterController painterController;
+  final FlutterPainterConfig config;
 
   @override
   State<FlutterPainterWidget> createState() => _FlutterPainterWidgetState();
@@ -251,7 +253,7 @@ class _FlutterPainterWidgetState extends State<FlutterPainterWidget> with Widget
             child: SimplePainterWidget(
               key: painterKey,
               painterController: widget.painterController,
-              aspectRatio: 3 / 1.2,
+              aspectRatio: widget.config.aspectRatio,
             ),
           ),
         ),
