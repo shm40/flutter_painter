@@ -36,6 +36,12 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
             onSelected: (xFile) {
               _painterController.setBackgroundImage(file: File(xFile.path));
             },
+            onError: (error) {
+              print(error);
+            },
+            iconColor: Colors.black,
+            cameraText: '写真を撮る',
+            galleryText: 'ギャラリーから選択する',
           ),
           ShowSavedImageButton(painterController: _painterController),
           UndoButton(painterController: _painterController),

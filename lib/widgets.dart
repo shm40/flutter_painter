@@ -493,8 +493,19 @@ class _SelectedIconState extends State<SelectedIcon> with WidgetsBindingObserver
 
 /// Button to select image by taking a photo or from gallery
 class ImagePickerButton extends StatelessWidget {
-  const ImagePickerButton({super.key, required this.onSelected});
+  const ImagePickerButton({
+    super.key,
+    required this.onSelected,
+    required this.iconColor,
+    required this.cameraText,
+    required this.galleryText,
+    this.onError,
+  });
   final ValueChanged<XFile> onSelected;
+  final Color iconColor;
+  final String cameraText;
+  final String galleryText;
+  final Function(dynamic error)? onError;
 
   @override
   Widget build(BuildContext context) {
@@ -515,13 +526,13 @@ class ImagePickerButton extends StatelessWidget {
                 children: [
                   ListTile(
                     onTap: () => Navigator.of(context).pop(ImageSource.camera),
-                    leading: const Icon(Icons.camera_alt_rounded),
-                    title: const Text('写真を撮る'),
+                    leading: Icon(Icons.camera_alt_rounded, color: iconColor),
+                    title: Text(cameraText),
                   ),
                   ListTile(
                     onTap: () => Navigator.of(context).pop(ImageSource.gallery),
-                    leading: const Icon(Icons.image_rounded),
-                    title: const Text('ギャラリーから選択する'),
+                    leading: Icon(Icons.image_rounded, color: iconColor),
+                    title: Text(galleryText),
                   ),
                 ],
               ),
@@ -531,11 +542,15 @@ class ImagePickerButton extends StatelessWidget {
         if (imageSource == null) {
           return;
         }
-        final xFile = await ImagePicker().pickImage(source: imageSource);
-        if (xFile == null) {
-          return;
+        try {
+          final xFile = await ImagePicker().pickImage(source: imageSource);
+          if (xFile == null) {
+            return;
+          }
+          onSelected(xFile);
+        } catch (error) {
+          onError?.call(error);
         }
-        onSelected(xFile);
       },
       icon: const Icon(Icons.image_rounded),
     );
