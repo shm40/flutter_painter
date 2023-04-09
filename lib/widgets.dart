@@ -114,11 +114,13 @@ class EraseButton extends StatelessWidget {
   const EraseButton({
     super.key,
     required this.painterController,
+    this.iconColor = Colors.white,
     this.size = 40,
   });
 
   final PainterController painterController;
   final double size;
+  final Color iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -132,14 +134,14 @@ class EraseButton extends StatelessWidget {
             margin: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               border: Border.all(
-                color: value.eraseMode ? Colors.white : Colors.transparent,
+                color: value.eraseMode ? iconColor : Colors.transparent,
                 width: 2,
               ),
               borderRadius: BorderRadius.circular(size / 2),
             ),
-            child: const Icon(
+            child: Icon(
               FontAwesomeIcons.eraser,
-              color: Colors.white,
+              color: iconColor,
             ),
           ),
         );
