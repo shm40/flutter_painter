@@ -36,7 +36,7 @@ class StrokeWidthSettingButton extends StatelessWidget {
           onSelected: (value) => painterController.changeStrokeWidth(fontWeight: value),
           icon: Text(
             'A',
-            style: TextStyle(fontWeight: fontWeight, fontSize: 24),
+            style: TextStyle(fontWeight: fontWeight, fontSize: 32),
           ),
           itemBuilder: (context) {
             return FontWeight.values
@@ -47,7 +47,7 @@ class StrokeWidthSettingButton extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'A',
-                            style: TextStyle(fontWeight: e),
+                            style: TextStyle(fontWeight: e, fontSize: 32),
                             selectionColor: Colors.orange,
                           ),
                         ),
