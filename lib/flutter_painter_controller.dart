@@ -5,12 +5,16 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_painter/flutter_painter_config.dart';
+import 'package:flutter_painter/flutter_painter_drawable.dart';
 import 'package:flutter_painter/flutter_painter_state.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 class PainterController extends ValueNotifier<FlutterPainterState> {
-  PainterController() : super(const FlutterPainterState());
+  final FlutterPainterConfig config;
+  PainterController({this.config = const FlutterPainterConfig()}) : super(const FlutterPainterState());
 
   /// Inisital witdh of painter widget
   double _initialPainterWidth = 0;
@@ -46,7 +50,10 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
       inDrag: true,
       paths: [
         ...value.paths,
-        MapEntry(Path()..moveTo(startPosition.dx, startPosition.dy), MapEntry(_currentPainterSize.width, paint)),
+        MapEntry(
+          FlutterPainterDrawable(path: Path()..moveTo(startPosition.dx, startPosition.dy)),
+          MapEntry(_currentPainterSize.width, paint),
+        ),
       ],
     );
 
@@ -61,7 +68,7 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
     }
 
     // Update the last path position
-    value.paths.last.key.lineTo(currentPosition.dx, currentPosition.dy);
+    value.paths.last.key.path?.lineTo(currentPosition.dx, currentPosition.dy);
 
     // Update current position
     value = value.copyWith(currentOffset: currentPosition);
@@ -76,6 +83,59 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
     // Reset current drawing offset
     value = value.copyWith(currentOffset: Offset.zero);
 
+    notifyListeners();
+  }
+
+  /// Put icon on screen
+  Future<void> setIcon(String iconPath) async {
+    value = value.copyWith(selectedIconPath: iconPath);
+    notifyListeners();
+  }
+
+  /// Update scale of icon
+  void updateIcon({
+    required double scale,
+    required Offset offset,
+    required double rotation,
+  }) {
+    value = value.copyWith(
+      selectedIconScale: scale,
+      selectedIconOffset: offset,
+      selectedIconRotation: rotation,
+    );
+    notifyListeners();
+  }
+
+  /// End icon update and add path list
+  Future<void> addIcon() async {
+    final rawSvg = await rootBundle.loadString(value.selectedIconPath!);
+
+    // Change icon color if the user changed current color
+    final svgRoot = await svg.fromSvgString(
+      rawSvg.replaceAll('#000000', '#${value.lineColor.value.toRadixString(16)}'),
+      value.selectedIconPath!,
+    );
+
+    value = value.copyWith(
+      paths: [
+        ...value.paths,
+        MapEntry(
+          FlutterPainterDrawable(
+            iconPath: value.selectedIconPath,
+            iconOffset: value.selectedIconOffset,
+            iconScale: value.selectedIconScale,
+            iconRotation: value.selectedIconRotation,
+            iconColor: value.lineColor,
+            iconImg: svgRoot,
+          ),
+          MapEntry(_currentPainterSize.width, Paint()),
+        ),
+      ],
+      selectedIconPath: null,
+      selectedIconOffset: const Offset(100, 100),
+      selectedIconScale: 1.0,
+      selectedIconRotation: 0.0,
+    );
     notifyListeners();
   }
 
@@ -140,7 +200,18 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
 
   /// Set the initial canvas width when the device orientation is chagned
   void onChangedOrientation(Size painterSize) {
+    final previousPainterSize = _currentPainterSize;
     _currentPainterSize = painterSize;
+    if (value.selectedIconPath == null) {
+      return;
+    }
+
+    // Update icon offset when the orientation chagnes
+    // Basically, if the painter size is larger than before the orientation change, then offset should be larger and vice versa.
+    value = value.copyWith(
+      selectedIconOffset: value.selectedIconOffset * (painterSize.width / previousPainterSize.width),
+    );
+    notifyListeners();
   }
 
   /// Draw current stored paths to canvas
@@ -153,25 +224,50 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
 
     canvas.saveLayer(Offset.zero & size, Paint());
     for (final element in value.paths) {
+      if (element.key.path == null && element.key.iconPath == null) {
+        continue;
+      }
+
+      // Draw line
+      if (element.key.path != null) {
+        canvas.save();
+
+        // Scale the canvas to handle the device orientation change
+        final scale = size.width / element.value.key;
+        canvas.scale(size.width / element.value.key);
+
+        final paint = Paint()
+          ..color = element.value.value.color
+          ..strokeWidth = element.value.value.strokeWidth
+          ..strokeCap = element.value.value.strokeCap
+          ..strokeJoin = element.value.value.strokeJoin
+          ..blendMode = element.value.value.blendMode
+          ..style = PaintingStyle.stroke;
+
+        // Multiply paint stroke width by the ratio of the width which the path was drawn and the current painter width but, only when not erasing
+        // This is the reciprocal of scale factor applied to canvas
+        if (paint.blendMode != BlendMode.clear) {
+          paint.strokeWidth = paint.strokeWidth * (1 / scale);
+        }
+        canvas.drawPath(element.key.path!, paint);
+
+        canvas.restore();
+        continue;
+      }
+
+      final picture = element.key.iconImg!.toPicture();
+      final canvasScale = size.width / element.value.key;
+
+      // Calculate the icon scale value because the default icon size is 24 pixel but the displayed size is 80 pixel.
+      final iconScale = config.defaultIconSize * element.key.iconScale / config.defaultRawIconSize * canvasScale;
+
       canvas.save();
 
-      // Scale the canvas to handle the device orientation change
-      final scale = size.width / element.value.key;
-      canvas.scale(size.width / element.value.key);
-
-      final paint = Paint()
-        ..color = element.value.value.color
-        ..strokeWidth = element.value.value.strokeWidth
-        ..strokeCap = element.value.value.strokeCap
-        ..strokeJoin = element.value.value.strokeJoin
-        ..blendMode = element.value.value.blendMode
-        ..style = PaintingStyle.stroke;
-
-      // Multiply paint stroke width by the ratio of the width which the path was drawn and the current painter width
-      // This is the reciprocal of scale factor applied to canvas
-      paint.strokeWidth = paint.strokeWidth * (1 / scale);
-      canvas.drawPath(element.key, paint);
-
+      canvas.translate(element.key.iconOffset.dx * canvasScale, element.key.iconOffset.dy * canvasScale);
+      canvas.rotate(element.key.iconRotation);
+      canvas.translate(-config.defaultRawIconSize * iconScale / 2, -config.defaultRawIconSize * iconScale / 2);
+      canvas.scale(iconScale);
+      canvas.drawPicture(picture);
       canvas.restore();
     }
     canvas.restore();

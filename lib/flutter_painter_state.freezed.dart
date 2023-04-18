@@ -16,18 +16,22 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$FlutterPainterState {
-  List<MapEntry<Path, MapEntry<double, Paint>>> get paths =>
+  List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>> get paths =>
       throw _privateConstructorUsedError;
-  List<MapEntry<Path, MapEntry<double, Paint>>> get removedPaths =>
-      throw _privateConstructorUsedError;
-  Offset get currentOffset => throw _privateConstructorUsedError;
+  List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>
+      get removedPaths => throw _privateConstructorUsedError;
+  ui.Offset get currentOffset => throw _privateConstructorUsedError;
   bool get inDrag => throw _privateConstructorUsedError;
   bool get eraseMode => throw _privateConstructorUsedError;
-  Color get lineColor => throw _privateConstructorUsedError;
+  ui.Color get lineColor => throw _privateConstructorUsedError;
   double get strokeWidth => throw _privateConstructorUsedError;
   double get eraseStrokeWidth => throw _privateConstructorUsedError;
   File? get backgroundImageFile => throw _privateConstructorUsedError;
   String? get backgroundImageUrl => throw _privateConstructorUsedError;
+  String? get selectedIconPath => throw _privateConstructorUsedError;
+  double get selectedIconScale => throw _privateConstructorUsedError;
+  double get selectedIconRotation => throw _privateConstructorUsedError;
+  ui.Offset get selectedIconOffset => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $FlutterPainterStateCopyWith<FlutterPainterState> get copyWith =>
@@ -41,16 +45,21 @@ abstract class $FlutterPainterStateCopyWith<$Res> {
       _$FlutterPainterStateCopyWithImpl<$Res, FlutterPainterState>;
   @useResult
   $Res call(
-      {List<MapEntry<Path, MapEntry<double, Paint>>> paths,
-      List<MapEntry<Path, MapEntry<double, Paint>>> removedPaths,
-      Offset currentOffset,
+      {List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>> paths,
+      List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>
+          removedPaths,
+      ui.Offset currentOffset,
       bool inDrag,
       bool eraseMode,
-      Color lineColor,
+      ui.Color lineColor,
       double strokeWidth,
       double eraseStrokeWidth,
       File? backgroundImageFile,
-      String? backgroundImageUrl});
+      String? backgroundImageUrl,
+      String? selectedIconPath,
+      double selectedIconScale,
+      double selectedIconRotation,
+      ui.Offset selectedIconOffset});
 }
 
 /// @nodoc
@@ -76,20 +85,26 @@ class _$FlutterPainterStateCopyWithImpl<$Res, $Val extends FlutterPainterState>
     Object? eraseStrokeWidth = null,
     Object? backgroundImageFile = freezed,
     Object? backgroundImageUrl = freezed,
+    Object? selectedIconPath = freezed,
+    Object? selectedIconScale = null,
+    Object? selectedIconRotation = null,
+    Object? selectedIconOffset = null,
   }) {
     return _then(_value.copyWith(
       paths: null == paths
           ? _value.paths
           : paths // ignore: cast_nullable_to_non_nullable
-              as List<MapEntry<Path, MapEntry<double, Paint>>>,
+              as List<
+                  MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>,
       removedPaths: null == removedPaths
           ? _value.removedPaths
           : removedPaths // ignore: cast_nullable_to_non_nullable
-              as List<MapEntry<Path, MapEntry<double, Paint>>>,
+              as List<
+                  MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>,
       currentOffset: null == currentOffset
           ? _value.currentOffset
           : currentOffset // ignore: cast_nullable_to_non_nullable
-              as Offset,
+              as ui.Offset,
       inDrag: null == inDrag
           ? _value.inDrag
           : inDrag // ignore: cast_nullable_to_non_nullable
@@ -101,7 +116,7 @@ class _$FlutterPainterStateCopyWithImpl<$Res, $Val extends FlutterPainterState>
       lineColor: null == lineColor
           ? _value.lineColor
           : lineColor // ignore: cast_nullable_to_non_nullable
-              as Color,
+              as ui.Color,
       strokeWidth: null == strokeWidth
           ? _value.strokeWidth
           : strokeWidth // ignore: cast_nullable_to_non_nullable
@@ -118,6 +133,22 @@ class _$FlutterPainterStateCopyWithImpl<$Res, $Val extends FlutterPainterState>
           ? _value.backgroundImageUrl
           : backgroundImageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      selectedIconPath: freezed == selectedIconPath
+          ? _value.selectedIconPath
+          : selectedIconPath // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedIconScale: null == selectedIconScale
+          ? _value.selectedIconScale
+          : selectedIconScale // ignore: cast_nullable_to_non_nullable
+              as double,
+      selectedIconRotation: null == selectedIconRotation
+          ? _value.selectedIconRotation
+          : selectedIconRotation // ignore: cast_nullable_to_non_nullable
+              as double,
+      selectedIconOffset: null == selectedIconOffset
+          ? _value.selectedIconOffset
+          : selectedIconOffset // ignore: cast_nullable_to_non_nullable
+              as ui.Offset,
     ) as $Val);
   }
 }
@@ -131,16 +162,21 @@ abstract class _$$_FlutterPainterStateCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<MapEntry<Path, MapEntry<double, Paint>>> paths,
-      List<MapEntry<Path, MapEntry<double, Paint>>> removedPaths,
-      Offset currentOffset,
+      {List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>> paths,
+      List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>
+          removedPaths,
+      ui.Offset currentOffset,
       bool inDrag,
       bool eraseMode,
-      Color lineColor,
+      ui.Color lineColor,
       double strokeWidth,
       double eraseStrokeWidth,
       File? backgroundImageFile,
-      String? backgroundImageUrl});
+      String? backgroundImageUrl,
+      String? selectedIconPath,
+      double selectedIconScale,
+      double selectedIconRotation,
+      ui.Offset selectedIconOffset});
 }
 
 /// @nodoc
@@ -164,20 +200,26 @@ class __$$_FlutterPainterStateCopyWithImpl<$Res>
     Object? eraseStrokeWidth = null,
     Object? backgroundImageFile = freezed,
     Object? backgroundImageUrl = freezed,
+    Object? selectedIconPath = freezed,
+    Object? selectedIconScale = null,
+    Object? selectedIconRotation = null,
+    Object? selectedIconOffset = null,
   }) {
     return _then(_$_FlutterPainterState(
       paths: null == paths
           ? _value._paths
           : paths // ignore: cast_nullable_to_non_nullable
-              as List<MapEntry<Path, MapEntry<double, Paint>>>,
+              as List<
+                  MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>,
       removedPaths: null == removedPaths
           ? _value._removedPaths
           : removedPaths // ignore: cast_nullable_to_non_nullable
-              as List<MapEntry<Path, MapEntry<double, Paint>>>,
+              as List<
+                  MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>,
       currentOffset: null == currentOffset
           ? _value.currentOffset
           : currentOffset // ignore: cast_nullable_to_non_nullable
-              as Offset,
+              as ui.Offset,
       inDrag: null == inDrag
           ? _value.inDrag
           : inDrag // ignore: cast_nullable_to_non_nullable
@@ -189,7 +231,7 @@ class __$$_FlutterPainterStateCopyWithImpl<$Res>
       lineColor: null == lineColor
           ? _value.lineColor
           : lineColor // ignore: cast_nullable_to_non_nullable
-              as Color,
+              as ui.Color,
       strokeWidth: null == strokeWidth
           ? _value.strokeWidth
           : strokeWidth // ignore: cast_nullable_to_non_nullable
@@ -206,6 +248,22 @@ class __$$_FlutterPainterStateCopyWithImpl<$Res>
           ? _value.backgroundImageUrl
           : backgroundImageUrl // ignore: cast_nullable_to_non_nullable
               as String?,
+      selectedIconPath: freezed == selectedIconPath
+          ? _value.selectedIconPath
+          : selectedIconPath // ignore: cast_nullable_to_non_nullable
+              as String?,
+      selectedIconScale: null == selectedIconScale
+          ? _value.selectedIconScale
+          : selectedIconScale // ignore: cast_nullable_to_non_nullable
+              as double,
+      selectedIconRotation: null == selectedIconRotation
+          ? _value.selectedIconRotation
+          : selectedIconRotation // ignore: cast_nullable_to_non_nullable
+              as double,
+      selectedIconOffset: null == selectedIconOffset
+          ? _value.selectedIconOffset
+          : selectedIconOffset // ignore: cast_nullable_to_non_nullable
+              as ui.Offset,
     ));
   }
 }
@@ -214,10 +272,10 @@ class __$$_FlutterPainterStateCopyWithImpl<$Res>
 
 class _$_FlutterPainterState implements _FlutterPainterState {
   const _$_FlutterPainterState(
-      {final List<MapEntry<Path, MapEntry<double, Paint>>> paths =
-          const <MapEntry<Path, MapEntry<double, Paint>>>[],
-      final List<MapEntry<Path, MapEntry<double, Paint>>> removedPaths =
-          const <MapEntry<Path, MapEntry<double, Paint>>>[],
+      {final List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>> paths =
+          const <MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>[],
+      final List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>> removedPaths =
+          const <MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>[],
       this.currentOffset = Offset.zero,
       this.inDrag = false,
       this.eraseMode = false,
@@ -225,23 +283,29 @@ class _$_FlutterPainterState implements _FlutterPainterState {
       this.strokeWidth = 5.0,
       this.eraseStrokeWidth = 48.0,
       this.backgroundImageFile,
-      this.backgroundImageUrl})
+      this.backgroundImageUrl,
+      this.selectedIconPath,
+      this.selectedIconScale = 1.0,
+      this.selectedIconRotation = 0.0,
+      this.selectedIconOffset = const Offset(100, 100)})
       : _paths = paths,
         _removedPaths = removedPaths;
 
-  final List<MapEntry<Path, MapEntry<double, Paint>>> _paths;
+  final List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>> _paths;
   @override
   @JsonKey()
-  List<MapEntry<Path, MapEntry<double, Paint>>> get paths {
+  List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>> get paths {
     if (_paths is EqualUnmodifiableListView) return _paths;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_paths);
   }
 
-  final List<MapEntry<Path, MapEntry<double, Paint>>> _removedPaths;
+  final List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>
+      _removedPaths;
   @override
   @JsonKey()
-  List<MapEntry<Path, MapEntry<double, Paint>>> get removedPaths {
+  List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>
+      get removedPaths {
     if (_removedPaths is EqualUnmodifiableListView) return _removedPaths;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_removedPaths);
@@ -249,7 +313,7 @@ class _$_FlutterPainterState implements _FlutterPainterState {
 
   @override
   @JsonKey()
-  final Offset currentOffset;
+  final ui.Offset currentOffset;
   @override
   @JsonKey()
   final bool inDrag;
@@ -258,7 +322,7 @@ class _$_FlutterPainterState implements _FlutterPainterState {
   final bool eraseMode;
   @override
   @JsonKey()
-  final Color lineColor;
+  final ui.Color lineColor;
   @override
   @JsonKey()
   final double strokeWidth;
@@ -269,10 +333,21 @@ class _$_FlutterPainterState implements _FlutterPainterState {
   final File? backgroundImageFile;
   @override
   final String? backgroundImageUrl;
+  @override
+  final String? selectedIconPath;
+  @override
+  @JsonKey()
+  final double selectedIconScale;
+  @override
+  @JsonKey()
+  final double selectedIconRotation;
+  @override
+  @JsonKey()
+  final ui.Offset selectedIconOffset;
 
   @override
   String toString() {
-    return 'FlutterPainterState(paths: $paths, removedPaths: $removedPaths, currentOffset: $currentOffset, inDrag: $inDrag, eraseMode: $eraseMode, lineColor: $lineColor, strokeWidth: $strokeWidth, eraseStrokeWidth: $eraseStrokeWidth, backgroundImageFile: $backgroundImageFile, backgroundImageUrl: $backgroundImageUrl)';
+    return 'FlutterPainterState(paths: $paths, removedPaths: $removedPaths, currentOffset: $currentOffset, inDrag: $inDrag, eraseMode: $eraseMode, lineColor: $lineColor, strokeWidth: $strokeWidth, eraseStrokeWidth: $eraseStrokeWidth, backgroundImageFile: $backgroundImageFile, backgroundImageUrl: $backgroundImageUrl, selectedIconPath: $selectedIconPath, selectedIconScale: $selectedIconScale, selectedIconRotation: $selectedIconRotation, selectedIconOffset: $selectedIconOffset)';
   }
 
   @override
@@ -297,7 +372,15 @@ class _$_FlutterPainterState implements _FlutterPainterState {
             (identical(other.backgroundImageFile, backgroundImageFile) ||
                 other.backgroundImageFile == backgroundImageFile) &&
             (identical(other.backgroundImageUrl, backgroundImageUrl) ||
-                other.backgroundImageUrl == backgroundImageUrl));
+                other.backgroundImageUrl == backgroundImageUrl) &&
+            (identical(other.selectedIconPath, selectedIconPath) ||
+                other.selectedIconPath == selectedIconPath) &&
+            (identical(other.selectedIconScale, selectedIconScale) ||
+                other.selectedIconScale == selectedIconScale) &&
+            (identical(other.selectedIconRotation, selectedIconRotation) ||
+                other.selectedIconRotation == selectedIconRotation) &&
+            (identical(other.selectedIconOffset, selectedIconOffset) ||
+                other.selectedIconOffset == selectedIconOffset));
   }
 
   @override
@@ -312,7 +395,11 @@ class _$_FlutterPainterState implements _FlutterPainterState {
       strokeWidth,
       eraseStrokeWidth,
       backgroundImageFile,
-      backgroundImageUrl);
+      backgroundImageUrl,
+      selectedIconPath,
+      selectedIconScale,
+      selectedIconRotation,
+      selectedIconOffset);
 
   @JsonKey(ignore: true)
   @override
@@ -324,29 +411,36 @@ class _$_FlutterPainterState implements _FlutterPainterState {
 
 abstract class _FlutterPainterState implements FlutterPainterState {
   const factory _FlutterPainterState(
-      {final List<MapEntry<Path, MapEntry<double, Paint>>> paths,
-      final List<MapEntry<Path, MapEntry<double, Paint>>> removedPaths,
-      final Offset currentOffset,
+      {final List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>
+          paths,
+      final List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>
+          removedPaths,
+      final ui.Offset currentOffset,
       final bool inDrag,
       final bool eraseMode,
-      final Color lineColor,
+      final ui.Color lineColor,
       final double strokeWidth,
       final double eraseStrokeWidth,
       final File? backgroundImageFile,
-      final String? backgroundImageUrl}) = _$_FlutterPainterState;
+      final String? backgroundImageUrl,
+      final String? selectedIconPath,
+      final double selectedIconScale,
+      final double selectedIconRotation,
+      final ui.Offset selectedIconOffset}) = _$_FlutterPainterState;
 
   @override
-  List<MapEntry<Path, MapEntry<double, Paint>>> get paths;
+  List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>> get paths;
   @override
-  List<MapEntry<Path, MapEntry<double, Paint>>> get removedPaths;
+  List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>>
+      get removedPaths;
   @override
-  Offset get currentOffset;
+  ui.Offset get currentOffset;
   @override
   bool get inDrag;
   @override
   bool get eraseMode;
   @override
-  Color get lineColor;
+  ui.Color get lineColor;
   @override
   double get strokeWidth;
   @override
@@ -355,6 +449,14 @@ abstract class _FlutterPainterState implements FlutterPainterState {
   File? get backgroundImageFile;
   @override
   String? get backgroundImageUrl;
+  @override
+  String? get selectedIconPath;
+  @override
+  double get selectedIconScale;
+  @override
+  double get selectedIconRotation;
+  @override
+  ui.Offset get selectedIconOffset;
   @override
   @JsonKey(ignore: true)
   _$$_FlutterPainterStateCopyWith<_$_FlutterPainterState> get copyWith =>

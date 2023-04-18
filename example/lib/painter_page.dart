@@ -32,6 +32,16 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
     return Scaffold(
       appBar: AppBar(
         actions: [
+          IconButton(
+            onPressed: () {
+              if (_painterController.value.selectedIconPath == null) {
+                _painterController.setIcon('asset/drive_eta_black_24dp.svg');
+                return;
+              }
+              _painterController.addIcon();
+            },
+            icon: const Icon(Icons.drive_eta_rounded),
+          ),
           ImagePickerButton(
             onSelected: (xFile) {
               _painterController.setBackgroundImage(file: File(xFile.path));

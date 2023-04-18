@@ -10,12 +10,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_colorpicker: ^1.0.3
+  flutter_svg: ^1.1.6
   font_awesome_flutter: ^10.4.0
   freezed_annotation: ^2.2.0
   http: ^0.13.5
   image_picker: ^0.8.7+1
   path_provider: ^2.0.14
-  flutter_colorpicker: ^1.0.3
   plugin_platform_interface: ^2.0.2
 
 dev_dependencies:
