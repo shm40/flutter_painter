@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_painter/flutter_painter.dart';
-import 'package:flutter_painter/flutter_painter_config.dart';
 import 'package:flutter_painter/flutter_painter_controller.dart';
 import 'package:flutter_painter/flutter_painter_state.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -200,9 +200,11 @@ class UndoButton extends StatelessWidget {
 
 /// Drawable widget that incorporating painter widget and erasing icon
 class FlutterPainterWidget extends StatefulWidget {
-  const FlutterPainterWidget({super.key, required this.painterController, this.config = const FlutterPainterConfig()});
+  const FlutterPainterWidget({
+    super.key,
+    required this.painterController,
+  });
   final PainterController painterController;
-  final FlutterPainterConfig config;
 
   @override
   State<FlutterPainterWidget> createState() => _FlutterPainterWidgetState();
@@ -242,23 +244,36 @@ class _FlutterPainterWidgetState extends State<FlutterPainterWidget> with Widget
     return Stack(
       key: stackKey,
       children: [
-        GestureDetector(
-          onPanStart: (details) {
-            final box = painterKey.currentContext!.findRenderObject() as RenderBox;
-            widget.painterController.add(box.globalToLocal(details.globalPosition));
+        ValueListenableBuilder(
+          valueListenable: widget.painterController,
+          builder: (context, value, child) {
+            return IgnorePointer(
+              ignoring: value.selectedIconPath != null,
+              child: GestureDetector(
+                onPanStart: (details) {
+                  final box = painterKey.currentContext!.findRenderObject() as RenderBox;
+                  widget.painterController.add(box.globalToLocal(details.globalPosition));
+                },
+                onPanUpdate: (details) {
+                  final box = painterKey.currentContext!.findRenderObject() as RenderBox;
+                  widget.painterController.update(box.globalToLocal(details.globalPosition));
+                },
+                onPanEnd: (details) => widget.painterController.end(),
+                child: Center(
+                  child: SimplePainterWidget(
+                    key: painterKey,
+                    painterController: widget.painterController,
+                    aspectRatio: widget.painterController.config.defaultAspectRatio,
+                  ),
+                ),
+              ),
+            );
           },
-          onPanUpdate: (details) {
-            final box = painterKey.currentContext!.findRenderObject() as RenderBox;
-            widget.painterController.update(box.globalToLocal(details.globalPosition));
-          },
-          onPanEnd: (details) => widget.painterController.end(),
-          child: Center(
-            child: SimplePainterWidget(
-              key: painterKey,
-              painterController: widget.painterController,
-              aspectRatio: widget.config.aspectRatio,
-            ),
-          ),
+        ),
+        SelectedIcon(
+          painterController: widget.painterController,
+          painterKey: painterKey,
+          stackKey: stackKey,
         ),
         ErasingIcon(
           painterController: widget.painterController,
@@ -369,45 +384,29 @@ class SelectedIcon extends StatefulWidget {
     required this.painterController,
     required this.painterKey,
     required this.stackKey,
-    required this.icon,
   });
 
   final PainterController painterController;
   final GlobalKey painterKey;
   final GlobalKey stackKey;
-  final IconData icon;
 
   @override
   State<SelectedIcon> createState() => _SelectedIconState();
 }
 
 class _SelectedIconState extends State<SelectedIcon> with WidgetsBindingObserver {
-  Offset _offset = const Offset(100, 100);
   Offset _dragStartOffset = Offset.zero;
-  double _scale = 1;
+  double _currentScale = 1;
+  double _currentRotation = 0;
+
   Offset parentGlobalOffset = Offset.zero;
   Offset painterGlobalOffset = Offset.zero;
   Offset diffOffsetInPainterAndStack = Offset.zero;
-
-  Offset _scalerDragStartOffset = Offset.zero;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() {
-        _calculateOffset();
-      });
-    });
-  }
-
-  @override
-  void didChangeMetrics() {
-    super.didChangeMetrics();
-    setState(() {
-      _calculateOffset();
-    });
   }
 
   @override
@@ -416,77 +415,93 @@ class _SelectedIconState extends State<SelectedIcon> with WidgetsBindingObserver
     super.dispose();
   }
 
-  void _calculateOffset() {
-    // Painter offset from parent stack widget
-    final parentBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
-    parentGlobalOffset = parentBox.localToGlobal(Offset.zero);
-
-    // Painter box
-    final painterBox = widget.painterKey.currentContext!.findRenderObject() as RenderBox;
-    painterGlobalOffset = painterBox.localToGlobal(Offset.zero);
-
-    diffOffsetInPainterAndStack = painterGlobalOffset - parentGlobalOffset;
-    _offset += diffOffsetInPainterAndStack;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fromRect(
-          rect: Rect.fromCenter(center: _offset, width: 72 * _scale, height: 72 * _scale),
-          child: GestureDetector(
-            onScaleStart: (details) {
-              final stackBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
-              _dragStartOffset = stackBox.globalToLocal(details.focalPoint) - _offset;
-            },
-            onScaleUpdate: (details) {
-              final stackBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
-              setState(() {
-                _offset = stackBox.globalToLocal(details.focalPoint) - _dragStartOffset;
-              });
-            },
-            onScaleEnd: (details) {
-              _dragStartOffset = Offset.zero;
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.blue,
-                  strokeAlign: BorderSide.strokeAlignOutside,
+    return ValueListenableBuilder(
+      valueListenable: widget.painterController,
+      builder: (context, value, child) {
+        if (value.selectedIconPath == null) {
+          return const SizedBox.shrink();
+        }
+        final parentBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
+        parentGlobalOffset = parentBox.localToGlobal(Offset.zero);
+
+        // Painter box
+        final painterBox = widget.painterKey.currentContext!.findRenderObject() as RenderBox;
+        painterGlobalOffset = painterBox.localToGlobal(Offset.zero);
+
+        return Stack(
+          children: [
+            Positioned.fromRect(
+              rect: Rect.fromCenter(
+                center: value.selectedIconOffset + (painterGlobalOffset - parentGlobalOffset),
+                width: widget.painterController.config.defaultIconSize,
+                height: widget.painterController.config.defaultIconSize,
+              ),
+              child: Transform.rotate(
+                angle: value.selectedIconRotation,
+                child: Transform.scale(
+                  scale: value.selectedIconScale,
+                  child: GestureDetector(
+                    onScaleStart: (details) {
+                      final stackBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
+                      _dragStartOffset = stackBox.globalToLocal(details.focalPoint) - value.selectedIconOffset;
+                      _currentScale = value.selectedIconScale;
+                      _currentRotation = value.selectedIconRotation;
+                    },
+                    onScaleUpdate: (details) {
+                      final stackBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
+                      widget.painterController.updateIcon(
+                        scale: _currentScale * details.scale,
+                        offset: stackBox.globalToLocal(details.focalPoint) - _dragStartOffset,
+                        rotation: details.rotation + _currentRotation,
+                      );
+                    },
+                    onScaleEnd: (details) {
+                      _dragStartOffset = Offset.zero;
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.blue,
+                          strokeAlign: BorderSide.strokeAlignOutside,
+                        ),
+                      ),
+                      child: SvgPicture.asset(
+                        value.selectedIconPath!,
+                        color: value.lineColor,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              child: Icon(
-                widget.icon,
-                size: 72 * _scale,
-              ),
             ),
-          ),
-        ),
-        Positioned.fromRect(
-          rect:
-              Rect.fromCenter(center: (_offset + Offset((72 * _scale) / 2, (72 * _scale) / 2)), width: 24, height: 24),
-          child: GestureDetector(
-            onScaleStart: (details) {
-              final stackBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
-              _scalerDragStartOffset = stackBox.globalToLocal(details.focalPoint);
-            },
-            onScaleUpdate: (details) {
-              final stackBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
-              final currentOffset = stackBox.globalToLocal(details.focalPoint);
-              setState(() {
-                _scale = (36 + (currentOffset.dx - _scalerDragStartOffset.dx)) / 36;
-              });
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ),
-      ],
+            // Positioned.fromRect(
+            //   rect: Rect.fromCenter(
+            //       center: (_offset + Offset((72 * _scale) / 2, (72 * _scale) / 2)), width: 24, height: 24),
+            //   child: GestureDetector(
+            //     onScaleStart: (details) {
+            //       final stackBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
+            //       _scalerDragStartOffset = stackBox.globalToLocal(details.focalPoint);
+            //     },
+            //     onScaleUpdate: (details) {
+            //       final stackBox = widget.stackKey.currentContext!.findRenderObject() as RenderBox;
+            //       final currentOffset = stackBox.globalToLocal(details.focalPoint);
+            //       setState(() {
+            //         _scale = (36 + (currentOffset.dx - _scalerDragStartOffset.dx)) / 36;
+            //       });
+            //     },
+            //     child: Container(
+            //       decoration: BoxDecoration(
+            //         color: Colors.blue,
+            //         borderRadius: BorderRadius.circular(12),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+          ],
+        );
+      },
     );
   }
 }
