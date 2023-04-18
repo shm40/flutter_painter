@@ -256,43 +256,19 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
       }
 
       final picture = element.key.iconImg!.toPicture();
-      final img = picture.toImageSync(config.defaultIconSize.toInt(), config.defaultIconSize.toInt());
-      final double devicePixelRatio = ui.window.devicePixelRatio;
-      final double scale = size.width / img.width / devicePixelRatio;
+      final canvasScale = size.width / element.value.key;
+
+      // Calculate the icon scale value because the default icon size is 24 pixel but the displayed size is 80 pixel.
+      final iconScale = config.defaultIconSize * element.key.iconScale / config.defaultRawIconSize * canvasScale;
+
       canvas.save();
-      canvas.scale(scale * element.key.iconScale);
-      canvas.drawImage(
-          img, element.key.iconOffset * element.key.iconScale * scale, Paint()..color = element.key.iconColor);
+
+      canvas.translate(element.key.iconOffset.dx * canvasScale, element.key.iconOffset.dy * canvasScale);
+      canvas.rotate(element.key.iconRotation);
+      canvas.translate(-config.defaultRawIconSize * iconScale / 2, -config.defaultRawIconSize * iconScale / 2);
+      canvas.scale(iconScale);
+      canvas.drawPicture(picture);
       canvas.restore();
-
-      // canvas.save();
-      // canvas.translate(element.key.iconOffset.dx, element.key.iconOffset.dy);
-      // canvas.translate(-config.defaultIconSize / 2, -config.defaultIconSize / 2);
-      // canvas.rotate(element.key.iconRotation);
-      // canvas.translate(-element.key.iconOffset.dx, -element.key.iconOffset.dy);
-      // canvas.translate(config.defaultIconSize / 2, config.defaultIconSize / 2);
-
-      // canvas.drawPicture(picture);
-      // canvas.restore();
-
-//       // 拡大率の計算
-//       final svgRoot = element.key.iconImg!;
-//       final svgSize = svgRoot.viewport.size;
-//       final scaleX = size.width / svgSize.width;
-//       final scaleY = size.height / svgSize.height;
-//       final scale = scaleX > scaleY ? scaleY : scaleX;
-
-// // 中央揃えのためのオフセット計算
-//       final offsetX = (size.width - svgSize.width * scale) / 2;
-//       final offsetY = (size.height - svgSize.height * scale) / 2;
-
-//       canvas.save();
-//       canvas.translate(2, 2);
-//       canvas.scale(scale, scale);
-//       print(scale);
-//       canvas.rotate(30 * pi / 180); // 30度回転
-//       svgRoot.scaleCanvasToViewBox(canvas, svgSize);
-//       canvas.restore();
     }
     canvas.restore();
   }
