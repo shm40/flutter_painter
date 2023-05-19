@@ -92,6 +92,17 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
     notifyListeners();
   }
 
+  /// Cancel currently selected icon
+  void cancelIcon() {
+    value = value.copyWith(
+      selectedIconPath: null,
+      selectedIconOffset: const Offset(100, 100),
+      selectedIconScale: 1.0,
+      selectedIconRotation: 0,
+    );
+    notifyListeners();
+  }
+
   /// Update scale of icon
   void updateIcon({
     required double scale,
