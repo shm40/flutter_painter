@@ -295,7 +295,7 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
   }
 
   /// Set background image from file or network image url
-  void setBackgroundImage({File? file, String? imageUrl}) {
+  void setBackgroundImage({File? file, String? imageUrl, bool clearPaths = true}) {
     assert((file != null && imageUrl == null) || (file == null && imageUrl != null));
 
     // Reset when background image is set or reset
@@ -303,8 +303,8 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
     _currentPainterSize = Size.zero;
 
     value = value.copyWith(
-      paths: [],
-      removedPaths: [],
+      paths: clearPaths ? [] : value.paths,
+      removedPaths: clearPaths ? [] : value.removedPaths,
       backgroundImageFile: file,
       backgroundImageUrl: imageUrl,
     );
