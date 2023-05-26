@@ -92,7 +92,6 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
   /// Only svg icon supported
   Future<void> setIcon(String iconPath) async {
     final ext = p.extension(iconPath);
-    print(ext);
     if (ext != '.svg') {
       throw Exception('$ext is not supported. Only `svg` is supported.');
     }
