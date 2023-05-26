@@ -35,6 +35,16 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
           IconButton(
             onPressed: () {
               if (_painterController.value.selectedIconPath == null) {
+                _painterController.setIcon('asset/body_a.svg');
+                return;
+              }
+              _painterController.addIcon();
+            },
+            icon: const Icon(Icons.drive_eta_rounded),
+          ),
+          IconButton(
+            onPressed: () {
+              if (_painterController.value.selectedIconPath == null) {
                 _painterController.setIcon('asset/drive_eta_black_24dp.svg');
                 return;
               }

@@ -10,6 +10,7 @@ import 'package:flutter_painter/flutter_painter_drawable.dart';
 import 'package:flutter_painter/flutter_painter_state.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 class PainterController extends ValueNotifier<FlutterPainterState> {
@@ -87,7 +88,14 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
   }
 
   /// Put icon on screen
+  ///
+  /// Only svg icon supported
   Future<void> setIcon(String iconPath) async {
+    final ext = p.extension(iconPath);
+    print(ext);
+    if (ext != '.svg') {
+      throw Exception('$ext is not supported. Only `svg` is supported.');
+    }
     value = value.copyWith(selectedIconPath: iconPath);
     notifyListeners();
   }
@@ -269,14 +277,16 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
       final picture = element.key.iconImg!.toPicture();
       final canvasScale = size.width / element.value.key;
 
-      // Calculate the icon scale value because the default icon size is 24 pixel but the displayed size is 80 pixel.
-      final iconScale = config.defaultIconSize * element.key.iconScale / config.defaultRawIconSize * canvasScale;
+      // Calculate the icon scale value because the default icon size is *** (depends on image) pixel but the displayed size is 80 pixel.
+      final iconScale =
+          config.defaultIconSize * element.key.iconScale / element.key.iconImg!.viewport.width * canvasScale;
 
       canvas.save();
 
       canvas.translate(element.key.iconOffset.dx * canvasScale, element.key.iconOffset.dy * canvasScale);
       canvas.rotate(element.key.iconRotation);
-      canvas.translate(-config.defaultRawIconSize * iconScale / 2, -config.defaultRawIconSize * iconScale / 2);
+      canvas.translate(
+          -element.key.iconImg!.viewport.width * iconScale / 2, -element.key.iconImg!.viewport.height * iconScale / 2);
       canvas.scale(iconScale);
       canvas.drawPicture(picture);
       canvas.restore();
