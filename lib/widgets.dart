@@ -203,8 +203,10 @@ class FlutterPainterWidget extends StatefulWidget {
   const FlutterPainterWidget({
     super.key,
     required this.painterController,
+    required this.onReloadNetworkImage,
   });
   final PainterController painterController;
+  final VoidCallback onReloadNetworkImage;
 
   @override
   State<FlutterPainterWidget> createState() => _FlutterPainterWidgetState();
@@ -264,6 +266,7 @@ class _FlutterPainterWidgetState extends State<FlutterPainterWidget> with Widget
                     key: painterKey,
                     painterController: widget.painterController,
                     aspectRatio: widget.painterController.config.defaultAspectRatio,
+                    onReloadNetworkImage: widget.onReloadNetworkImage,
                   ),
                 ),
               ),
@@ -291,10 +294,11 @@ class SimplePainterWidget extends StatelessWidget {
     super.key,
     required this.painterController,
     required this.aspectRatio,
+    required this.onReloadNetworkImage,
   });
-
   final PainterController painterController;
   final double aspectRatio;
+  final VoidCallback onReloadNetworkImage;
 
   @override
   Widget build(BuildContext context) {
@@ -306,7 +310,16 @@ class SimplePainterWidget extends StatelessWidget {
             ? const SizedBox(width: double.infinity, height: double.infinity)
             : value.backgroundImageFile != null
                 ? Image.file(value.backgroundImageFile!)
-                : Image.network(value.backgroundImageUrl!);
+                : Image.network(
+                    value.backgroundImageUrl!,
+                    errorBuilder: (context, error, stackTrace) {
+                      return TextButton.icon(
+                        onPressed: onReloadNetworkImage,
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: const Text('再読み込み'),
+                      );
+                    },
+                  );
         if (isBackgroundEmpty) {
           return AspectRatio(
             aspectRatio: aspectRatio,

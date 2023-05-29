@@ -17,6 +17,9 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     _painterController = PainterController();
+    _painterController.setBackgroundImage(
+        imageUrl:
+            'https://mages.pexels.com/photos/3866555/pexels-photo-3866555.png?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -89,7 +92,17 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
                 ],
               ),
             ),
-            Expanded(child: FlutterPainterWidget(painterController: _painterController)),
+            Expanded(
+              child: FlutterPainterWidget(
+                painterController: _painterController,
+                onReloadNetworkImage: () {
+                  print('reload');
+                  _painterController.setBackgroundImage(
+                      imageUrl:
+                          'https://images.pexels.com/photos/3866555/pexels-photo-3866555.png?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+                },
+              ),
+            ),
           ],
         ),
       ),
