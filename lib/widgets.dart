@@ -204,9 +204,11 @@ class FlutterPainterWidget extends StatefulWidget {
     super.key,
     required this.painterController,
     required this.onReloadNetworkImage,
+    this.disabled = false,
   });
   final PainterController painterController;
   final VoidCallback onReloadNetworkImage;
+  final bool disabled;
 
   @override
   State<FlutterPainterWidget> createState() => _FlutterPainterWidgetState();
@@ -262,11 +264,14 @@ class _FlutterPainterWidgetState extends State<FlutterPainterWidget> with Widget
                 },
                 onPanEnd: (details) => widget.painterController.end(),
                 child: Center(
-                  child: SimplePainterWidget(
-                    key: painterKey,
-                    painterController: widget.painterController,
-                    aspectRatio: widget.painterController.config.defaultAspectRatio,
-                    onReloadNetworkImage: widget.onReloadNetworkImage,
+                  child: IgnorePointer(
+                    ignoring: widget.disabled,
+                    child: SimplePainterWidget(
+                      key: painterKey,
+                      painterController: widget.painterController,
+                      aspectRatio: widget.painterController.config.defaultAspectRatio,
+                      onReloadNetworkImage: widget.onReloadNetworkImage,
+                    ),
                   ),
                 ),
               ),

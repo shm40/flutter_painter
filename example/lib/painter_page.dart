@@ -13,13 +13,15 @@ class PainterPage extends StatefulWidget {
 class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
   late PainterController _painterController;
 
+  final bool _paintDisabled = false;
+
   @override
   void initState() {
     super.initState();
     _painterController = PainterController();
-    _painterController.setBackgroundImage(
-        imageUrl:
-            'https://mages.pexels.com/photos/3866555/pexels-photo-3866555.png?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+    // _painterController.setBackgroundImage(
+    //     imageUrl:
+    //         'https://mages.pexels.com/photos/3866555/pexels-photo-3866555.png?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -94,6 +96,7 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
             ),
             Expanded(
               child: FlutterPainterWidget(
+                disabled: _paintDisabled,
                 painterController: _painterController,
                 onReloadNetworkImage: () {
                   print('reload');
