@@ -32,6 +32,7 @@ mixin _$FlutterPainterState {
   double get selectedIconScale => throw _privateConstructorUsedError;
   double get selectedIconRotation => throw _privateConstructorUsedError;
   ui.Offset get selectedIconOffset => throw _privateConstructorUsedError;
+  bool get disablePainting => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $FlutterPainterStateCopyWith<FlutterPainterState> get copyWith =>
@@ -59,7 +60,8 @@ abstract class $FlutterPainterStateCopyWith<$Res> {
       String? selectedIconPath,
       double selectedIconScale,
       double selectedIconRotation,
-      ui.Offset selectedIconOffset});
+      ui.Offset selectedIconOffset,
+      bool disablePainting});
 }
 
 /// @nodoc
@@ -89,6 +91,7 @@ class _$FlutterPainterStateCopyWithImpl<$Res, $Val extends FlutterPainterState>
     Object? selectedIconScale = null,
     Object? selectedIconRotation = null,
     Object? selectedIconOffset = null,
+    Object? disablePainting = null,
   }) {
     return _then(_value.copyWith(
       paths: null == paths
@@ -149,6 +152,10 @@ class _$FlutterPainterStateCopyWithImpl<$Res, $Val extends FlutterPainterState>
           ? _value.selectedIconOffset
           : selectedIconOffset // ignore: cast_nullable_to_non_nullable
               as ui.Offset,
+      disablePainting: null == disablePainting
+          ? _value.disablePainting
+          : disablePainting // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -176,7 +183,8 @@ abstract class _$$_FlutterPainterStateCopyWith<$Res>
       String? selectedIconPath,
       double selectedIconScale,
       double selectedIconRotation,
-      ui.Offset selectedIconOffset});
+      ui.Offset selectedIconOffset,
+      bool disablePainting});
 }
 
 /// @nodoc
@@ -204,6 +212,7 @@ class __$$_FlutterPainterStateCopyWithImpl<$Res>
     Object? selectedIconScale = null,
     Object? selectedIconRotation = null,
     Object? selectedIconOffset = null,
+    Object? disablePainting = null,
   }) {
     return _then(_$_FlutterPainterState(
       paths: null == paths
@@ -264,6 +273,10 @@ class __$$_FlutterPainterStateCopyWithImpl<$Res>
           ? _value.selectedIconOffset
           : selectedIconOffset // ignore: cast_nullable_to_non_nullable
               as ui.Offset,
+      disablePainting: null == disablePainting
+          ? _value.disablePainting
+          : disablePainting // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -287,7 +300,8 @@ class _$_FlutterPainterState implements _FlutterPainterState {
       this.selectedIconPath,
       this.selectedIconScale = 1.0,
       this.selectedIconRotation = 0.0,
-      this.selectedIconOffset = const Offset(100, 100)})
+      this.selectedIconOffset = const Offset(100, 100),
+      this.disablePainting = false})
       : _paths = paths,
         _removedPaths = removedPaths;
 
@@ -344,10 +358,13 @@ class _$_FlutterPainterState implements _FlutterPainterState {
   @override
   @JsonKey()
   final ui.Offset selectedIconOffset;
+  @override
+  @JsonKey()
+  final bool disablePainting;
 
   @override
   String toString() {
-    return 'FlutterPainterState(paths: $paths, removedPaths: $removedPaths, currentOffset: $currentOffset, inDrag: $inDrag, eraseMode: $eraseMode, lineColor: $lineColor, strokeWidth: $strokeWidth, eraseStrokeWidth: $eraseStrokeWidth, backgroundImageFile: $backgroundImageFile, backgroundImageUrl: $backgroundImageUrl, selectedIconPath: $selectedIconPath, selectedIconScale: $selectedIconScale, selectedIconRotation: $selectedIconRotation, selectedIconOffset: $selectedIconOffset)';
+    return 'FlutterPainterState(paths: $paths, removedPaths: $removedPaths, currentOffset: $currentOffset, inDrag: $inDrag, eraseMode: $eraseMode, lineColor: $lineColor, strokeWidth: $strokeWidth, eraseStrokeWidth: $eraseStrokeWidth, backgroundImageFile: $backgroundImageFile, backgroundImageUrl: $backgroundImageUrl, selectedIconPath: $selectedIconPath, selectedIconScale: $selectedIconScale, selectedIconRotation: $selectedIconRotation, selectedIconOffset: $selectedIconOffset, disablePainting: $disablePainting)';
   }
 
   @override
@@ -380,7 +397,9 @@ class _$_FlutterPainterState implements _FlutterPainterState {
             (identical(other.selectedIconRotation, selectedIconRotation) ||
                 other.selectedIconRotation == selectedIconRotation) &&
             (identical(other.selectedIconOffset, selectedIconOffset) ||
-                other.selectedIconOffset == selectedIconOffset));
+                other.selectedIconOffset == selectedIconOffset) &&
+            (identical(other.disablePainting, disablePainting) ||
+                other.disablePainting == disablePainting));
   }
 
   @override
@@ -399,7 +418,8 @@ class _$_FlutterPainterState implements _FlutterPainterState {
       selectedIconPath,
       selectedIconScale,
       selectedIconRotation,
-      selectedIconOffset);
+      selectedIconOffset,
+      disablePainting);
 
   @JsonKey(ignore: true)
   @override
@@ -426,7 +446,8 @@ abstract class _FlutterPainterState implements FlutterPainterState {
       final String? selectedIconPath,
       final double selectedIconScale,
       final double selectedIconRotation,
-      final ui.Offset selectedIconOffset}) = _$_FlutterPainterState;
+      final ui.Offset selectedIconOffset,
+      final bool disablePainting}) = _$_FlutterPainterState;
 
   @override
   List<MapEntry<FlutterPainterDrawable, MapEntry<double, Paint>>> get paths;
@@ -457,6 +478,8 @@ abstract class _FlutterPainterState implements FlutterPainterState {
   double get selectedIconRotation;
   @override
   ui.Offset get selectedIconOffset;
+  @override
+  bool get disablePainting;
   @override
   @JsonKey(ignore: true)
   _$$_FlutterPainterStateCopyWith<_$_FlutterPainterState> get copyWith =>

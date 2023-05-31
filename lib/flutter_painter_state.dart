@@ -26,5 +26,6 @@ class FlutterPainterState with _$FlutterPainterState {
     @Default(1.0) double selectedIconScale,
     @Default(0.0) double selectedIconRotation,
     @Default(Offset(100, 100)) Offset selectedIconOffset,
+    @Default(false) bool disablePainting,
   }) = _FlutterPainterState;
 }

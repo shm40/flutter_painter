@@ -24,8 +24,28 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
   /// when painter is rendered and reinitialized when background image is set
   Size _currentPainterSize = Size.zero;
 
+  /// Enable painting
+  void enablePainting({bool shouldNotify = false}) {
+    value = value.copyWith(disablePainting: false);
+    if (shouldNotify) {
+      notifyListeners();
+    }
+  }
+
+  /// Disable painting
+  void disablePainting({bool shouldNotify = false}) {
+    value = value.copyWith(disablePainting: true);
+    if (shouldNotify) {
+      notifyListeners();
+    }
+  }
+
   /// Add start positin when dragging start
   void add(Offset startPosition) {
+    if (value.disablePainting) {
+      return;
+    }
+
     // Ignore to add path in current path histories if in drag
     if (value.inDrag) {
       return;
@@ -63,6 +83,10 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
 
   /// Update dragging position
   void update(Offset currentPosition) {
+    if (value.disablePainting) {
+      return;
+    }
+
     // Ignore when not dragging or when current path history is empty
     if (!value.inDrag || value.paths.isEmpty) {
       return;
@@ -79,6 +103,10 @@ class PainterController extends ValueNotifier<FlutterPainterState> {
 
   /// End dragging
   void end() {
+    if (value.disablePainting) {
+      return;
+    }
+
     value = value.copyWith(inDrag: false);
 
     // Reset current drawing offset

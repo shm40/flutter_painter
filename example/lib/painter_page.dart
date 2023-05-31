@@ -13,8 +13,6 @@ class PainterPage extends StatefulWidget {
 class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
   late PainterController _painterController;
 
-  final bool _paintDisabled = false;
-
   @override
   void initState() {
     super.initState();
@@ -39,6 +37,8 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
         actions: [
           IconButton(
             onPressed: () {
+              _painterController.enablePainting();
+              return;
               if (_painterController.value.selectedIconPath == null) {
                 _painterController.setIcon('asset/body_a.svg');
                 return;
@@ -49,6 +49,8 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
           ),
           IconButton(
             onPressed: () {
+              _painterController.disablePainting();
+              return;
               if (_painterController.value.selectedIconPath == null) {
                 _painterController.setIcon('asset/drive_eta_black_24dp.svg');
                 return;
@@ -96,7 +98,6 @@ class _PainterPageState extends State<PainterPage> with WidgetsBindingObserver {
             ),
             Expanded(
               child: FlutterPainterWidget(
-                disabled: _paintDisabled,
                 painterController: _painterController,
                 onReloadNetworkImage: () {
                   print('reload');
